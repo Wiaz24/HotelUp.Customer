@@ -1,0 +1,6 @@
+﻿@url = http://localhost:5000/api/HotelUp.Customer
+### GET request to example server
+
+GET {{url}}/_health
+
+###
