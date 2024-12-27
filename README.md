@@ -1,5 +1,6 @@
 # HotelUp - Customer service
 ![dockerhub_badge](https://github.com/Wiaz24/HotelUp.Customer/actions/workflows/dockerhub.yml/badge.svg)
+![tests_badge](https://github.com/Wiaz24/HotelUp.Customer/actions/workflows/tests.yml/badge.svg)
 
 This service should expose endpoints on port `5000` starting with:
 ```http
