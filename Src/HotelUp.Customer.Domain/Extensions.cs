@@ -1,4 +1,5 @@
-﻿using HotelUp.Customer.Domain.Services;
+﻿using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
+using HotelUp.Customer.Domain.Services;
 using HotelUp.Customer.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ public static class Extensions
     {
         services.AddFactories(configuration);
         services.AddDomainServices(configuration);
+        services.AddRoomPricePolicy();
+        
         return services;
     }
     
