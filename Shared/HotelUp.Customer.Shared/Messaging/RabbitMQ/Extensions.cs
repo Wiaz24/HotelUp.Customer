@@ -5,7 +5,7 @@ namespace HotelUp.Customer.Shared.Messaging.RabbitMQ;
 internal static class Extensions
 {
     private const string SectionName = "MessageBroker:RabbitMQ";
-
+    
     internal static IServiceCollection AddRabbitMq(this IServiceCollection services)
     {
         services.AddOptions<RabbitMqOptions>()

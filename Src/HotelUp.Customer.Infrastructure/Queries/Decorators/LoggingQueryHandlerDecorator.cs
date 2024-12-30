@@ -24,7 +24,7 @@ internal sealed class LoggingQueryHandlerDecorator<TQuery> : IQueryHandler<TQuer
     }
 }
 
-internal sealed class LoggingQueryHandlerDecorator<TQuery, TResult>
+internal sealed class LoggingQueryHandlerDecorator<TQuery, TResult> 
     : IQueryHandler<TQuery, TResult> where TQuery : class, IQuery<TResult>
 {
     private readonly IQueryHandler<TQuery, TResult> _queryHandler;

@@ -27,7 +27,7 @@ public class ExceptionMiddleware : IMiddleware
             {
                 context.Response.StatusCode = 400;
                 context.Response.ContentType = "application/json";
-
+            
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
                 var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
                 await context.Response.WriteAsync(json);
@@ -40,9 +40,12 @@ public class ExceptionMiddleware : IMiddleware
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
                 var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
                 await context.Response.WriteAsync(json);
+                
             }
             else throw;
+
         }
+
     }
 
     private static string ToSnakeCase(string input)

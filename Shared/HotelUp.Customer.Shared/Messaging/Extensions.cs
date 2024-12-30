@@ -35,9 +35,9 @@ internal static class Extensions
         var assemblies = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
             .Where(p => p.GetInterfaces()
-                            .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConsumer<>))
-                        && p.IsClass
-                        && !p.IsAbstract)
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConsumer<>))
+                && p.IsClass
+                && !p.IsAbstract)
             .Select(p => p.Assembly)
             .Distinct()
             .Where(a => a.FullName?.Contains("MassTransit") == false)

@@ -3,8 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HotelUp.Customer.Application.Commands.Decorators;
 
-internal sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
-    where TCommand : class, ICommand
+internal sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand> where TCommand : class, ICommand
 {
     private readonly ICommandHandler<TCommand> _commandHandler;
     private readonly ILogger<LoggingCommandHandlerDecorator<TCommand>> _logger;

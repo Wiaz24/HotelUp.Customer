@@ -18,4 +18,7 @@ internal static class Extensions
             .AddCheck<DatabaseHealthCheck>("Database");
         return services;
     }
+    
+    
+
 }

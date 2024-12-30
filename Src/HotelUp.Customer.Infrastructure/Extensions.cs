@@ -17,9 +17,11 @@ public static class Extensions
         services.AddRepositories();
         return services;
     }
-
+    
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IConfiguration configuration)
     {
         return app;
     }
+    
+    
 }

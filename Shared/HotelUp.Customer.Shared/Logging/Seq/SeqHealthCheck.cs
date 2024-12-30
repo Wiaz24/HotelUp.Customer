@@ -8,14 +8,14 @@ public class SeqHealthCheck : IHealthCheck
 {
     private readonly HttpClient _httpClient;
     private readonly SeqOptions _seqOptions;
-
+    
     public SeqHealthCheck(IHttpClientFactory httpClientFactory, IOptions<SeqOptions> seqOptions)
     {
         _seqOptions = seqOptions.Value;
         _httpClient = httpClientFactory.CreateClient("Seq");
     }
-
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+    
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, 
         CancellationToken cancellationToken = new CancellationToken())
     {
         var result = await _httpClient.GetAsync(_seqOptions.ServerUrl, cancellationToken);

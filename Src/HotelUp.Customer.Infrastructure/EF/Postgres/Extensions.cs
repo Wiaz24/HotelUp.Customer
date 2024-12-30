@@ -8,14 +8,13 @@ namespace HotelUp.Customer.Infrastructure.EF.Postgres;
 public static class Extensions
 {
     private const string SectionName = "Postgres";
-
+    
     public static IServiceCollection ConfigurePostgres(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<PostgresOptions>(configuration.GetSection(SectionName));
-
+        
         return services;
     }
-
     public static IServiceCollection AddPostgres<T>(this IServiceCollection services) where T : DbContext
     {
         var options = services.BuildServiceProvider().GetRequiredService<IOptions<PostgresOptions>>();

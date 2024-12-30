@@ -4,7 +4,7 @@ namespace HotelUp.Customer.Tests.Integration.TestContainers;
 
 internal static class TestDatabaseFactory
 {
-    internal static PostgreSqlContainer CreatePostgreSqlContainer()
+    internal static PostgreSqlContainer Create()
     {
         return new PostgreSqlBuilder()
             .WithImage("postgres:latest")

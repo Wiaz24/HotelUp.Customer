@@ -7,13 +7,13 @@ namespace HotelUp.Customer.Infrastructure.EF.Health;
 public class DatabaseHealthCheck : IHealthCheck
 {
     private readonly ReadDbContext _readDbContext;
-
+    
     public DatabaseHealthCheck(ReadDbContext readDbContext)
     {
         _readDbContext = readDbContext;
     }
-
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+    
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, 
         CancellationToken cancellationToken = new CancellationToken())
     {
         try
@@ -25,5 +25,6 @@ public class DatabaseHealthCheck : IHealthCheck
         {
             return HealthCheckResult.Unhealthy(exception: e);
         }
+        
     }
 }

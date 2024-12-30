@@ -6,8 +6,7 @@ namespace HotelUp.Customer.Tests.Integration.Controllers;
 [Collection("QueriesControllerTests")]
 public class QueriesControllerTests : ControllerTestsBase
 {
-    private const string Prefix = "api/Customer/queries";
-
+    private const string Prefix = "api/customer/queries";
     public QueriesControllerTests(TestWebAppFactory factory) : base(factory)
     {
     }
@@ -16,7 +15,7 @@ public class QueriesControllerTests : ControllerTestsBase
     public async Task GetOne_ShouldReturnOK_WhenDatabaseExists()
     {
         var response = await HttpClient.GetAsync(Prefix);
-
+        
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }

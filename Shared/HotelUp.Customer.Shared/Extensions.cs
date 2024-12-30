@@ -1,4 +1,5 @@
-﻿using HotelUp.Customer.Shared.Exceptions;
+﻿using HotelUp.Customer.Shared.Auth;
+using HotelUp.Customer.Shared.Exceptions;
 using HotelUp.Customer.Shared.Logging;
 using HotelUp.Customer.Shared.Messaging;
 using HotelUp.Customer.Shared.SystemsManager;
@@ -13,22 +14,24 @@ public static class Extensions
 {
     public static WebApplicationBuilder AddShared(this WebApplicationBuilder builder)
     {
-        builder.Services.AddHttpClient();
         builder.Services.AddHealthChecks();
+        builder.Services.AddAuth(builder.Configuration);
+        builder.Services.AddHttpClient();
         builder.Services.AddMessaging();
-        // builder.AddCustomSystemsManagers();
+        builder.AddCustomSystemsManagers();
         builder.Services.AddTransient<ExceptionMiddleware>();
         builder.AddCustomLogging();
         return builder;
     }
-
+    
     public static IApplicationBuilder UseShared(this IApplicationBuilder app)
     {
         app.UseMiddleware<ExceptionMiddleware>();
-        app.UseHealthChecks("/api/HotelUp.Customer/_health", new HealthCheckOptions
+        app.UseHealthChecks("/api/customer/_health", new HealthCheckOptions
         {
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
+        app.UseAuth();
         return app;
     }
 }

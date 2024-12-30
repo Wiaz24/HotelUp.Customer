@@ -20,8 +20,7 @@ public class InMemoryQueryDispatcher : IQueryDispatcher
         var handler = scope.ServiceProvider.GetRequiredService(handlerType);
         try
         {
-            var result = await (Task<TResult>)handlerType
-                .GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.HandleAsync))?
+            var result =  await (Task<TResult>) handlerType.GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.HandleAsync))?
                 .Invoke(handler, new[] { query });
             return result;
         }
@@ -29,5 +28,6 @@ public class InMemoryQueryDispatcher : IQueryDispatcher
         {
             throw new DatabaseException(e.Message);
         }
+        
     }
 }

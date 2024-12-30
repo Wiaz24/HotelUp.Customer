@@ -12,8 +12,8 @@ public class AwsSystemsManagerHealthCheck : IHealthCheck
     {
         _ssmClient = ssmClient;
     }
-
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+    
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, 
         CancellationToken cancellationToken = new CancellationToken())
     {
         try

@@ -15,9 +15,16 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
         <PackageReference Include="Shouldly" Version="4.2.1"/>
+        <PackageReference Include="Testcontainers.Keycloak" Version="4.1.0"/>
         <PackageReference Include="Testcontainers.PostgreSql" Version="4.1.0"/>
         <PackageReference Include="xunit" Version="2.5.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Import\import.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

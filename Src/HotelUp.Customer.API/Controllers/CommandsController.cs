@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HotelUp.Customer.API.Controllers;
 
 [ApiController]
-[Route("api/Customer/commands")]
+[Route("api/customer/commands")]
 public class CommandsController : ControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;

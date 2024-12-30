@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
 // ReSharper disable All
 
 namespace HotelUp.Customer.Infrastructure.EF.Postgres;
@@ -15,8 +14,8 @@ public class DatabaseInitializer : IHostedService
     private readonly ILogger<DatabaseInitializer> _logger;
     private readonly IConfiguration _configuration;
 
-    public DatabaseInitializer(IServiceProvider serviceProvider,
-        ILogger<DatabaseInitializer> logger,
+    public DatabaseInitializer(IServiceProvider serviceProvider, 
+        ILogger<DatabaseInitializer> logger, 
         IConfiguration configuration)
     {
         _serviceProvider = serviceProvider;
@@ -29,7 +28,7 @@ public class DatabaseInitializer : IHostedService
         var shouldMigrate = _configuration.GetValue<bool>("ApplyMigrations");
         if (shouldMigrate is false)
             return;
-
+        
         var dbContextTypes = Assembly.GetCallingAssembly().GetTypes()
             .Where(x => typeof(DbContext).IsAssignableFrom(x) && !x.IsInterface && x != typeof(DbContext));
 
@@ -41,7 +40,6 @@ public class DatabaseInitializer : IHostedService
             {
                 continue;
             }
-
             var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
             if (pendingMigrations.Any())
             {
@@ -49,6 +47,7 @@ public class DatabaseInitializer : IHostedService
                 await dbContext.Database.MigrateAsync(cancellationToken);
             }
         }
+        
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

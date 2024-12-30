@@ -2,7 +2,7 @@
 
 public abstract class ControllerTestsBase : IClassFixture<TestWebAppFactory>
 {
-    protected HttpClient HttpClient { get; }
+    protected HttpClient HttpClient { get;}
 
     protected ControllerTestsBase(TestWebAppFactory factory)
     {
