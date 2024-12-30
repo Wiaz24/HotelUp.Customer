@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HotelUp.Customer.Domain.Services;
+using HotelUp.Customer.Domain.ValueObjects;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HotelUp.Customer.Domain;
@@ -26,7 +28,11 @@ public static class Extensions
     {
         // Register domain services here
         // Domain services can depend on repositories
-        
+        services.AddOptions<HotelDay>()
+            .BindConfiguration("HotelDay")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddScoped<IHotelHourService, HotelHourService>();
         return services;
     }
 }

@@ -9,13 +9,11 @@ public record HotelDay
     
     public HotelDay(TimeOnly startHour, TimeOnly endHour)
     {
-        if (startHour > endHour)
+        if (startHour < endHour)
         {
             throw new HotelDayInvalidHoursException();
         }
         StartHour = startHour;
         EndHour = endHour;
     }
-    
-    
 }

@@ -8,9 +8,7 @@
 
     <ItemGroup>
         <Folder Include="Exceptions\" />
-        <Folder Include="Factories\"/>
         <Folder Include="Repositories\"/>
-        <Folder Include="Services\"/>
     </ItemGroup>
 
     <ItemGroup>
