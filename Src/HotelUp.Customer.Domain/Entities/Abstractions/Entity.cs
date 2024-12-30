@@ -1,6 +1,6 @@
 ﻿using HotelUp.Customer.Domain.Events;
 
-namespace HotelUp.Customer.Domain.Entities;
+namespace HotelUp.Customer.Domain.Entities.Abstractions;
 
 public abstract class Entity<TId>
 {

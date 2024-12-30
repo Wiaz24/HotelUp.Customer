@@ -23,7 +23,7 @@ public class ExceptionMiddleware : IMiddleware
         catch (Exception ex)
         {
             // if Exception type is HotelUp.CustomerException, then we can return the message as is
-            if (ex.GetType() == typeof(ApplicationException))
+            if (ex.GetType() == typeof(AppException))
             {
                 context.Response.StatusCode = 400;
                 context.Response.ContentType = "application/json";
