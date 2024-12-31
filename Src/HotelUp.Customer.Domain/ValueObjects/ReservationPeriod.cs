@@ -24,9 +24,15 @@ public record ReservationPeriod
             throw new ReservationPeriodInvalidDatesException();
         }
         
-        From = new DateTime(from.Year, from.Month, from.Day, 
-            hotelDay.StartHour.Hour, hotelDay.StartHour.Minute, hotelDay.StartHour.Second);
-        To = new DateTime(to.Year, to.Month, to.Day,
-            hotelDay.StartHour.Hour, hotelDay.StartHour.Minute, hotelDay.StartHour.Second);
+        From = new DateTime(from, hotelDay.StartHour);
+        To = new DateTime(to, hotelDay.EndHour);
+    }
+}
+
+public static class ReservationPeriodExtensions
+{
+    public static bool PartiallyOverlapsWith(this ReservationPeriod period, ReservationPeriod otherPeriod)
+    {
+        return !(otherPeriod.To < period.From || otherPeriod.From > period.To);
     }
 }

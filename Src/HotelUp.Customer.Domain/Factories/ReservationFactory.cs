@@ -28,15 +28,14 @@ public sealed class ReservationFactory : IReservationFactory
     {
         var hotelDay = _hotelDayFactory.Create();
         var period = new ReservationPeriod(startDate, endDate, hotelDay);
-        
-        var availableRooms = (await _roomRepository.GetAvailableRoomsAsync(period)).ToList()
-            ?? throw new NoAvailableRoomsException();
+
+        var availableRooms = (await _roomRepository.GetAvailableRoomsAsync(period)).ToList();
 
         var availableRoomNumbers = availableRooms.Select(room => room.Number).ToList();
         
         if (roomNumbers is null || !roomNumbers.Any())
         {
-            throw new CannotCreateReservationWithoutRooms();
+            throw new CannotCreateReservationWithoutRoomsException();
         }
 
         var invalidRoomNumbers = roomNumbers
@@ -57,7 +56,7 @@ public sealed class ReservationFactory : IReservationFactory
         }
         if (tenantsData.Any() is false)
         {
-            throw new CannotCreateReservationWithoutTenants();
+            throw new CannotCreateReservationWithoutTenantsException();
         }
 
         Money accommodationPrice = new Money(0);
