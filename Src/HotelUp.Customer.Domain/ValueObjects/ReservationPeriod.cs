@@ -9,11 +9,24 @@ public record ReservationPeriod
     
     public ReservationPeriod(DateTime from, DateTime to)
     {
-        if (from > to)
+        if (from >= to)
         {
             throw new ReservationPeriodInvalidDatesException();
         }
         From = from;
         To = to;
+    }
+
+    public ReservationPeriod(DateOnly from, DateOnly to, HotelDay hotelDay)
+    {
+        if (from >= to)
+        {
+            throw new ReservationPeriodInvalidDatesException();
+        }
+        
+        From = new DateTime(from.Year, from.Month, from.Day, 
+            hotelDay.StartHour.Hour, hotelDay.StartHour.Minute, hotelDay.StartHour.Second);
+        To = new DateTime(to.Year, to.Month, to.Day,
+            hotelDay.StartHour.Hour, hotelDay.StartHour.Minute, hotelDay.StartHour.Second);
     }
 }

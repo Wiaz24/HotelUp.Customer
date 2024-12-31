@@ -13,19 +13,10 @@ public class Bill : Entity<Guid>
     private List<Payment> _payments = new();
     public IEnumerable<Payment> Payments => _payments;
     
-    public Bill(Guid id, Money accomodationPrice, 
-        IEnumerable<AdditionalCost> additionalCosts, IEnumerable<Payment> payments)
+    internal Bill(Money accomodationPrice)
     {
-        Id = id;
         AccomodationPrice = accomodationPrice;
-        foreach (var cost in additionalCosts)
-        {
-            AddAdditionalCost(cost);
-        }
-        foreach (var payment in payments)
-        {
-            AddPayment(payment);
-        }
+        Id = Guid.NewGuid();
     }
     
     public void AddAdditionalCost(AdditionalCost additionalCost)

@@ -14,5 +14,20 @@ public class Reservation : AggregateRoot<Guid>
     private List<Tenant> _tenants = new();
     public IEnumerable<Tenant> Tenants => _tenants;
     
+    private List<Room> _rooms = new();
+    public IEnumerable<Room> Rooms => _rooms;
     public Bill? Bill { get; private set; }
+    
+    internal Reservation(Client client, HotelDay hotelDay, ReservationPeriod period, 
+        IEnumerable<Tenant> tenants, IEnumerable<Room> rooms, Bill bill)
+    {
+        Id = Guid.NewGuid();
+        Client = client;
+        HotelDay = hotelDay;
+        Period = period;
+        _tenants.AddRange(tenants);
+        _rooms.AddRange(rooms);
+        Status = ReservationStatus.Valid;
+        Bill = bill;
+    }
 }
