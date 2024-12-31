@@ -7,20 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Consts\"/>
-        <Folder Include="Exceptions\"/>
-        <Folder Include="Factories\"/>
-        <Folder Include="Repositories\"/>
-        <Folder Include="Services\"/>
-        <Folder Include="ValueObjects\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Shared\HotelUp.Customer.Shared\HotelUp.Customer.Shared.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.11.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>

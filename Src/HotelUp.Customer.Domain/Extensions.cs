@@ -1,4 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HotelUp.Customer.Domain.Factories;
+using HotelUp.Customer.Domain.Factories.Abstractions;
+using HotelUp.Customer.Domain.Factories.Options;
+using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
+using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
+using HotelUp.Customer.Domain.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HotelUp.Customer.Domain;
@@ -7,26 +13,21 @@ public static class Extensions
 {
     public static IServiceCollection AddDomain(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddFactories(configuration);
-        services.AddDomainServices(configuration);
+        services.AddFactories();
+        services.AddDomainServices();
+        services.AddRoomPricePolicy();
+        services.AddTenantPricePolicy();
+
+        services.AddScoped<IRoomRepository, MockRoomRepository>(); //REMOVE THIS IN THE FUTURE
+        services.AddScoped<IClientRepository, MockClientRepository>(); //REMOVE THIS IN THE FUTURE
         return services;
     }
     
     //Repositories should be implemented in infrastructure layer
-
-    private static IServiceCollection AddFactories(this IServiceCollection services, IConfiguration configuration)
-    {
-        // Register factories here
-        // Factories can depend on repositories
-        
-        return services;
-    }
-    
-    private static IServiceCollection AddDomainServices(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
         // Register domain services here
         // Domain services can depend on repositories
-        
         return services;
     }
 }
