@@ -1,3 +1,4 @@
+using HotelUp.Customer.Domain.Factories.Abstractions;
 using HotelUp.Customer.Domain.Factories.Options;
 using HotelUp.Customer.Domain.ValueObjects;
 using Microsoft.Extensions.Options;

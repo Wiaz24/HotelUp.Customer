@@ -1,8 +1,7 @@
 ﻿using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
-using HotelUp.Customer.Domain.ValueObjects;
 
-namespace HotelUp.Customer.Domain.Factories;
+namespace HotelUp.Customer.Domain.Factories.Abstractions;
 
 public interface IReservationFactory
 {

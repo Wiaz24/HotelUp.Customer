@@ -1,4 +1,5 @@
 ﻿using HotelUp.Customer.Domain.Factories;
+using HotelUp.Customer.Domain.Factories.Abstractions;
 using HotelUp.Customer.Domain.Factories.Options;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
 using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
@@ -18,25 +19,11 @@ public static class Extensions
         services.AddTenantPricePolicy();
 
         services.AddScoped<IRoomRepository, MockRoomRepository>(); //REMOVE THIS IN THE FUTURE
+        services.AddScoped<IClientRepository, MockClientRepository>(); //REMOVE THIS IN THE FUTURE
         return services;
     }
     
     //Repositories should be implemented in infrastructure layer
-
-    private static IServiceCollection AddFactories(this IServiceCollection services)
-    {
-        // Register factories here
-        // Factories can depend on repositories
-        services.AddOptions<HotelDayOptions>()
-            .BindConfiguration("HotelDay")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-        services.AddScoped<IHotelDayFactory, HotelDayFactory>();
-        services.AddScoped<IReservationFactory, ReservationFactory>();
-        services.AddScoped<IRoomFactory, RoomFactory>();
-        return services;
-    }
-    
     private static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
         // Register domain services here

@@ -1,5 +1,6 @@
 using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
+using HotelUp.Customer.Domain.Factories.Abstractions;
 using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
 using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
@@ -77,7 +78,7 @@ public sealed class ReservationFactory : IReservationFactory
         var bill = new Bill(accommodationPrice);
         
         var tenants = tenantsData.Select(tenantData => new Tenant(tenantData));
-        var reservation = new Reservation(client, hotelDay, period, tenants, rooms, bill);
+        var reservation = new Reservation(client, period, tenants, rooms, bill);
         return reservation;
     }
 }

@@ -1,5 +1,6 @@
 using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
+using HotelUp.Customer.Domain.Factories.Abstractions;
 using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Repositories;
 using HotelUp.Customer.Domain.ValueObjects;

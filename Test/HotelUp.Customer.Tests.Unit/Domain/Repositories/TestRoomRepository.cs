@@ -6,8 +6,8 @@ namespace HotelUp.Customer.Unit.Domain.Repositories;
 
 internal class TestRoomRepository : IRoomRepository
 {
-    public Dictionary<Guid, Reservation> Reservations = new();
-    public Dictionary<int, Room> Rooms = new();
+    // public Dictionary<Guid, Reservation> Reservations = new();
+    public readonly Dictionary<int, Room> Rooms = new();
     public Task<IEnumerable<Room>> GetAvailableRoomsAsync(ReservationPeriod period)
     {
         throw new NotImplementedException();
