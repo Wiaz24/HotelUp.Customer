@@ -6,8 +6,7 @@ public record HotelDay
 {
     public TimeOnly StartHour { get; init; }
     public TimeOnly EndHour { get; init; }
-    
-    public HotelDay(TimeOnly startHour, TimeOnly endHour)
+    internal HotelDay(TimeOnly startHour, TimeOnly endHour)
     {
         if (startHour < endHour)
         {
