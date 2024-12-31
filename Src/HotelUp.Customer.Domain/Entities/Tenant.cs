@@ -13,6 +13,15 @@ public class Tenant : Entity<Guid>
     public Pesel Pesel { get; private set; }
     public DocumentType DocumentType { get; private set; }
     public PresenceStatus Status { get; private set; }
-    
-    
+    internal Tenant(TenantData data)
+    {
+        Id = Guid.NewGuid();
+        FirstName = data.FirstName;
+        LastName = data.LastName;
+        PhoneNumber = data.PhoneNumber;
+        Email = data.Email;
+        Pesel = data.Pesel;
+        DocumentType = data.DocumentType;
+        Status = PresenceStatus.Pending;
+    }
 }

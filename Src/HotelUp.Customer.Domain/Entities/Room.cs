@@ -12,5 +12,15 @@ public class Room : AggregateRoot<int>
     public bool WithSpecialNeeds { get; private set; }
     public RoomType Type { get; private set; }
     public ImageUrl ImageUrl { get; private set; }
+    internal Room(int number, RoomCapacity capacity, RoomFloor floor, 
+        bool withSpecialNeeds, RoomType type, ImageUrl imageUrl)
+    {
+        Id = number;
+        Capacity = capacity;
+        Floor = floor;
+        WithSpecialNeeds = withSpecialNeeds;
+        Type = type;
+        ImageUrl = imageUrl;
+    }
     
 }

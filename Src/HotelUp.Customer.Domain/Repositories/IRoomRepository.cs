@@ -5,6 +5,6 @@ namespace HotelUp.Customer.Domain.Repositories;
 
 public interface IRoomRepository
 {
-    Task<IEnumerable<Room>> GetRoomsByTheirNumbersAsync(IEnumerable<int> roomNumbers);
     Task<IEnumerable<Room>> GetAvailableRoomsAsync(ReservationPeriod period);
+    Task<Room?> GetRoomAsync(int number);
 }

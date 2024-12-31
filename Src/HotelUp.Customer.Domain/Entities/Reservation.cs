@@ -1,5 +1,6 @@
 ﻿using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities.Abstractions;
+using HotelUp.Customer.Domain.Entities.Exceptions;
 using HotelUp.Customer.Domain.ValueObjects;
 
 namespace HotelUp.Customer.Domain.Entities;
@@ -29,5 +30,19 @@ public class Reservation : AggregateRoot<Guid>
         _rooms.AddRange(rooms);
         Status = ReservationStatus.Valid;
         Bill = bill;
+    }
+    
+    public void Cancel()
+    {
+        if (Status == ReservationStatus.Canceled)
+        {
+            return; // Idempotency
+        }
+        if (DateTime.Now > Period.From - TimeSpan.FromHours(24))
+        {
+            throw new ReservationCannotBeCanceledException();
+        }
+        Status = ReservationStatus.Canceled;
+        Bill = null;
     }
 }

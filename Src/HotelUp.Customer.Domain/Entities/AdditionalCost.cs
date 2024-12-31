@@ -8,9 +8,9 @@ public class AdditionalCost : Entity<Guid>
     public Guid TaskId => Id;
     public Money Price { get; private set; }
 
-    public AdditionalCost(Guid taskId, Money price)
+    internal AdditionalCost(Money price)
     {
-        Id = taskId;
+        Id = Guid.NewGuid();
         Price = price;
     }
 }

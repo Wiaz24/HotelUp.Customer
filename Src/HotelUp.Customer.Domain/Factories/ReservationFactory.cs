@@ -1,3 +1,4 @@
+using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
@@ -23,16 +24,14 @@ public sealed class ReservationFactory : IReservationFactory
         _hotelHourService = hotelHourService;
     }
     public async Task<Reservation> Create(Client client, List<int> roomNumbers, 
-        List<Tenant> tenants, DateOnly startDate, DateOnly endDate)
+        List<TenantData> tenantsData, DateOnly startDate, DateOnly endDate)
     {
         var hotelDay = _hotelHourService.GetCurrentHotelDay();
         var period = new ReservationPeriod(startDate, endDate, hotelDay);
         
-        var availableRooms = (await _roomRepository.GetAvailableRoomsAsync(period)).ToList();
-        if (availableRooms is null)
-        {
-            throw new NoAvailableRoomsException();
-        }
+        var availableRooms = (await _roomRepository.GetAvailableRoomsAsync(period)).ToList()
+            ?? throw new NoAvailableRoomsException();
+
         var availableRoomNumbers = availableRooms.Select(room => room.Number).ToList();
         
         if (roomNumbers is null || !roomNumbers.Any())
@@ -52,9 +51,13 @@ public sealed class ReservationFactory : IReservationFactory
         var rooms = availableRooms.Where(room => roomNumbers.Contains(room.Number)).ToList();
 
         var totalRoomsCapacity = rooms.Sum(x => x.Capacity);
-        if (tenants.Count > totalRoomsCapacity)
+        if (tenantsData.Count > totalRoomsCapacity)
         {
-            throw new NotEnoughRoomSpaceException(totalRoomsCapacity, tenants.Count);
+            throw new NotEnoughRoomSpaceException(totalRoomsCapacity, tenantsData.Count);
+        }
+        if (tenantsData.Any() is false)
+        {
+            throw new CannotCreateReservationWithoutTenants();
         }
 
         Money accommodationPrice = new Money(0);
@@ -67,13 +70,14 @@ public sealed class ReservationFactory : IReservationFactory
                 .Sum(x => x);
             accommodationPrice += roomPrice;
         }
-        var tenantPricePolicyData = new TenantPricePolicyData(accommodationPrice, tenants.Count);
+        var tenantPricePolicyData = new TenantPricePolicyData(accommodationPrice, tenantsData.Count);
         if (_tenantPricePolicy.IsApplicable(tenantPricePolicyData))
         {
             accommodationPrice = _tenantPricePolicy.CalculateAccomodationPrice(tenantPricePolicyData);
         }
         var bill = new Bill(accommodationPrice);
         
+        var tenants = tenantsData.Select(tenantData => new Tenant(tenantData));
         var reservation = new Reservation(client, hotelDay, period, tenants, rooms, bill);
         return reservation;
     }

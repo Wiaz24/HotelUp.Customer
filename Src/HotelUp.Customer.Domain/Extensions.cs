@@ -1,4 +1,6 @@
-﻿using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
+﻿using HotelUp.Customer.Domain.Factories;
+using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
+using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
 using HotelUp.Customer.Domain.Services;
 using HotelUp.Customer.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
@@ -10,20 +12,21 @@ public static class Extensions
 {
     public static IServiceCollection AddDomain(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddFactories(configuration);
+        services.AddFactories();
         services.AddDomainServices(configuration);
         services.AddRoomPricePolicy();
-        
+        services.AddTenantPricePolicy();
         return services;
     }
     
     //Repositories should be implemented in infrastructure layer
 
-    private static IServiceCollection AddFactories(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddFactories(this IServiceCollection services)
     {
         // Register factories here
         // Factories can depend on repositories
-        
+        services.AddScoped<IReservationFactory, ReservationFactory>();
+        services.AddScoped<IRoomFactory, RoomFactory>();
         return services;
     }
     
