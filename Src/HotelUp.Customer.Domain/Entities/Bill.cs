@@ -36,4 +36,7 @@ public class Bill : Entity<Guid>
         return AccomodationPrice.Amount + additionalCostsSum - paymentsSum;
     }
     
+    private Bill()
+    {
+    }
 }

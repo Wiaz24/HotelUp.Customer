@@ -13,4 +13,8 @@ public class Payment : Entity<Guid>
         Amount = amount;
         SettlementDate = settlementDate;
     }
+    
+    private Payment()
+    {
+    }
 }

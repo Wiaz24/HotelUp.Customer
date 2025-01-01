@@ -13,4 +13,8 @@ public class AdditionalCost : Entity<Guid>
         Id = Guid.NewGuid();
         Price = price;
     }
+    
+    private AdditionalCost()
+    {
+    }
 }

@@ -23,4 +23,7 @@ public class Room : AggregateRoot<int>
         ImageUrl = imageUrl;
     }
     
+    private Room()
+    {
+    }
 }

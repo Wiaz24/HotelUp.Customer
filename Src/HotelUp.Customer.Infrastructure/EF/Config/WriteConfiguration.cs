@@ -42,6 +42,7 @@ internal sealed class WriteConfiguration
         
         builder.HasOne(x => x.Bill)
             .WithOne()
+            .HasForeignKey<Bill>(b => b.Id)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
         
