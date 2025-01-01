@@ -10,11 +10,13 @@ public class PostgresRoomRepository : IRoomRepository
 {
     private readonly DbSet<Room> _rooms;
     private readonly DbSet<Reservation> _reservations;
+    private readonly WriteDbContext _dbContext;
 
     public PostgresRoomRepository(WriteDbContext dbContext)
     {
         _rooms = dbContext.Set<Room>();
         _reservations = dbContext.Set<Reservation>();
+        _dbContext = dbContext;
     }
 
     public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(ReservationPeriod period)
@@ -28,5 +30,23 @@ public class PostgresRoomRepository : IRoomRepository
     public Task<Room?> GetRoomAsync(int number)
     {
         return _rooms.FirstOrDefaultAsync(r => r.Id == number);
+    }
+
+    public async Task AddAsync(Room room)
+    {
+        await _rooms.AddAsync(room);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Room room)
+    {
+        _rooms.Update(room);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Room room)
+    {
+        _rooms.Remove(room);
+        await _dbContext.SaveChangesAsync();
     }
 }

@@ -41,4 +41,22 @@ internal class TestRoomRepository : IRoomRepository
     {
         return Task.FromResult(Rooms.TryGetValue(number, out var room) ? room : null);
     }
+
+    public Task AddAsync(Room room)
+    {
+        Rooms.Add(room.Number, room);
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateAsync(Room room)
+    {
+        Rooms[room.Number] = room;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(Room room)
+    {
+        Rooms.Remove(room.Number);
+        return Task.CompletedTask;
+    }
 }

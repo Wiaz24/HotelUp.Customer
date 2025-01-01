@@ -2,7 +2,6 @@ using HotelUp.Customer.Domain.Repositories;
 using MassTransit;
 using IClientFactory = HotelUp.Customer.Domain.Factories.Abstractions.IClientFactory;
 
-
 namespace HotelUp.Customer.Application.Events.External.Handlers;
 
 public class UserCreatedEventHandler : IConsumer<UserCreatedEvent>

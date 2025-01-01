@@ -38,6 +38,14 @@ public class CommandsController : ControllerBase
         return Created();
     }
     
+    [HttpPost("create-room")]
+    [Authorize]
+    public async Task<IActionResult> CreateRoom([FromBody] CreateRoom command)
+    {
+        await _commandDispatcher.DispatchAsync(command);
+        return Created();
+    }
+    
     [HttpPost("test-user-created-event")]
     public async Task<IActionResult> TestUserCreatedEvent()
     {
