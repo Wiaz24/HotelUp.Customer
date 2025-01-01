@@ -2,8 +2,9 @@
 using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Application.Commands;
 using HotelUp.Customer.Application.Commands.Abstractions;
-using HotelUp.Customer.Domain.Consts;
+using HotelUp.Customer.Application.Events.External;
 using HotelUp.Customer.Shared.Exceptions;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,13 @@ namespace HotelUp.Customer.API.Controllers;
 public class CommandsController : ControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IBus _bus;
     private Guid LoggedInUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) 
         is { } id ? new Guid(id) : throw new TokenException("No user id found in access token.");
-    public CommandsController(ICommandDispatcher commandDispatcher)
+    public CommandsController(ICommandDispatcher commandDispatcher, IBus bus)
     {
         _commandDispatcher = commandDispatcher;
+        _bus = bus;
     }
 
     [HttpPost("create-reservation")]
@@ -32,6 +35,20 @@ public class CommandsController : ControllerBase
             dto.StartDate, 
             dto.EndDate);
         await _commandDispatcher.DispatchAsync(command);
+        return Created();
+    }
+    
+    [HttpPost("test-user-created-event")]
+    public async Task<IActionResult> TestUserCreatedEvent()
+    {
+        await _bus.Publish(new UserCreatedEvent(Guid.NewGuid()));
+        return Created();
+    }
+    
+    [HttpPost("test-user-created-event/{id}")]
+    public async Task<IActionResult> TestUserCreatedEvent(Guid id)
+    {
+        await _bus.Publish(new UserCreatedEvent(id));
         return Created();
     }
 }

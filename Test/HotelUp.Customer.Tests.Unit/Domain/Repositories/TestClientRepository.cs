@@ -11,4 +11,10 @@ public class TestClientRepository : IClientRepository
     {
         return Task.FromResult(Clients.TryGetValue(id, out var client) ? client : null);
     }
+
+    public Task AddAsync(Client client)
+    {
+        Clients[client.Id] = client;
+        return Task.CompletedTask;
+    }
 }
