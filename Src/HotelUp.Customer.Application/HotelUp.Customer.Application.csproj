@@ -12,9 +12,6 @@
 
     <ItemGroup>
         <Folder Include="ApplicationServices\"/>
-        <Folder Include="Commands\Handlers\"/>
-        <Folder Include="DTOs\"/>
-        <Folder Include="Exceptions\"/>
     </ItemGroup>
 
     <ItemGroup>

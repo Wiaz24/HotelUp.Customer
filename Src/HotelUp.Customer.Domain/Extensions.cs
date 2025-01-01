@@ -17,9 +17,6 @@ public static class Extensions
         services.AddDomainServices();
         services.AddRoomPricePolicy();
         services.AddTenantPricePolicy();
-
-        services.AddScoped<IRoomRepository, MockRoomRepository>(); //REMOVE THIS IN THE FUTURE
-        services.AddScoped<IClientRepository, MockClientRepository>(); //REMOVE THIS IN THE FUTURE
         return services;
     }
     
