@@ -1,12 +1,17 @@
 ﻿using HotelUp.Customer.Tests.Integration.TestContainers;
+using HotelUp.Customer.Tests.Integration.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Testcontainers.Keycloak;
 using Testcontainers.PostgreSql;
+using Testcontainers.RabbitMq;
 
 namespace HotelUp.Customer.Tests.Integration;
 
@@ -15,63 +20,39 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
     private readonly PostgreSqlContainer _dbContainer = 
         TestDatabaseFactory.Create();
     
-    private readonly KeycloakContainer _keycloakContainer = 
-        KeycloakContainerFactory.Create();
+    // private readonly KeycloakContainer _keycloakContainer = 
+    //     KeycloakContainerFactory.Create();
+    
+    private readonly RabbitMqContainer _rabbitMqContainer = 
+        RabbitMqContainerFactory.Create();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            
-            var dbContextTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsSubclassOf(typeof(DbContext)) && !t.IsAbstract)
-                .ToList();
-            
-            foreach (var dbContextType in dbContextTypes)
-            {
-                services.RemoveAll(dbContextType);
-                var dbContextOptionsType = typeof(DbContextOptions<>).MakeGenericType(dbContextType);
-                services.RemoveAll(dbContextOptionsType);
-
-                var addDbContextMethod = typeof(EntityFrameworkServiceCollectionExtensions)
-                    .GetMethods()
-                    .FirstOrDefault(m => m.Name == "AddDbContext" && m.IsGenericMethod);
-
-                if (addDbContextMethod != null)
-                {
-                    var genericAddDbContextMethod = addDbContextMethod.MakeGenericMethod(dbContextType);
-                    
-                    Action<DbContextOptionsBuilder> optionsAction = options =>
-                    {
-                        options.UseNpgsql(_dbContainer.GetConnectionString());
-                    };
-                    
-                    genericAddDbContextMethod.Invoke(null, new object[] { services, optionsAction, null, null });
-                }
-            }
+            services.AddMockJwtTokens();
+            services.AddMockPostgres(_dbContainer);
         });
     }
-
-    public async Task InitializeAsync()
+    
+    public Task InitializeAsync()
     {
         var tasks = new List<Task>
         {
             _dbContainer.StartAsync(),
+            _rabbitMqContainer.StartAsync()
             // _keycloakContainer.StartAsync()
         };
-        
-        await Task.WhenAll(tasks);
+        return Task.WhenAll(tasks);
     }
 
-    public new async Task DisposeAsync()
+    public new Task DisposeAsync()
     {
         var tasks = new List<Task>
         {
             _dbContainer.StopAsync(),
+            _rabbitMqContainer.StopAsync()
             // _keycloakContainer.StopAsync()
         };
-        
-        await Task.WhenAll(tasks);
+        return Task.WhenAll(tasks);
     }
 }

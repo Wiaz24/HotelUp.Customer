@@ -9,15 +9,15 @@ public static class Extensions
         var allowedHosts = configuration.GetSection(SectionName).Get<string[]>()
             ?? throw new NullReferenceException($"{SectionName} not found in config file");
         
-        services.AddCors(
-            options => options.AddPolicy(
-                FrontendPolicy,
+        services.AddCors(options =>
+        {
+            options.AddPolicy(FrontendPolicy,
                 policy => policy
                     .WithOrigins(allowedHosts)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
-            ));
+                    .AllowCredentials());
+        });
         
         return services;
     }

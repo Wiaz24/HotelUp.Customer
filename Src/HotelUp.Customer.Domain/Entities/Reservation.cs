@@ -43,4 +43,8 @@ public class Reservation : AggregateRoot<Guid>
         Status = ReservationStatus.Canceled;
         Bill = null;
     }
+    
+    private Reservation()
+    {
+    }
 }

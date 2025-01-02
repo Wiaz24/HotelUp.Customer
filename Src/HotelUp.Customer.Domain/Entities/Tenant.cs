@@ -24,4 +24,8 @@ public class Tenant : Entity<Guid>
         DocumentType = data.DocumentType;
         Status = PresenceStatus.Pending;
     }
+    
+    private Tenant()
+    {
+    }
 }

@@ -5,8 +5,8 @@ using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
 using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
 using HotelUp.Customer.Domain.ValueObjects;
-using HotelUp.Customer.Unit.Domain.Repositories;
-using HotelUp.Customer.Unit.Domain.Utils;
+using HotelUp.Customer.Tests.Shared.Utils;
+using HotelUp.Customer.Tests.Shared.Utils.Domain.Repositories;
 using Shouldly;
 
 namespace HotelUp.Customer.Unit.Domain.Factories;
@@ -30,8 +30,8 @@ public class ReservationFactoryTests
     public async Task Create_FirstReservationEver_ShouldCreate()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies, 
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -39,7 +39,8 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(5);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(1);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(1)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -60,15 +61,16 @@ public class ReservationFactoryTests
     public async Task Create_WhenNoRoomsAvailable_ThrowsNoRoomsAvailableException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
 
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(2);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(2)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -88,8 +90,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNotEnoughRoomSpace_ThrowsNotEnoughRoomSpaceException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -97,7 +99,8 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(20, 2);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(6);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(6)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -116,8 +119,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNoTenants_ThrowsCannotCreateReservationWithoutTenantsException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -143,8 +146,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNoRooms_ThrowsCannotCreateReservationWithoutRoomsException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -152,7 +155,8 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(5);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(1);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(1)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -170,8 +174,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenSelectedRoomIsUnavailable_ThrowsSomeRoomsAreUnavailableException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -180,7 +184,9 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(5);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(1).ToList();
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(1)
+            .Select(dto => dto.ToTenantData())
+            .ToList();
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
         

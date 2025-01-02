@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Src\HotelUp.Customer.API\HotelUp.Customer.API.csproj" />
+      <ProjectReference Include="..\HotelUp.Customer.Tests.Shared\HotelUp.Customer.Tests.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using MassTransit.Internals;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -22,19 +23,20 @@ public class ExceptionMiddleware : IMiddleware
         }
         catch (Exception ex)
         {
-            // if Exception type is HotelUp.CustomerException, then we can return the message as is
-            if (ex.GetType() == typeof(AppException))
+            var type = ex.GetType();
+          
+            if (type.IsConcreteAndAssignableTo<AppException>())
             {
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Response.ContentType = "application/json";
             
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
                 var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
                 await context.Response.WriteAsync(json);
             }
-            else if (ex.GetType() == typeof(DatabaseException))
+            else if (type.IsConcreteAndAssignableTo<DatabaseException>())
             {
-                context.Response.StatusCode = 503;
+                context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                 context.Response.ContentType = "application/json";
                 _logger.LogError(ex.Message);
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
@@ -42,10 +44,17 @@ public class ExceptionMiddleware : IMiddleware
                 await context.Response.WriteAsync(json);
                 
             }
+            else if (type.IsConcreteAndAssignableTo<TokenException>())
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+            
+                var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
+                var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
+                await context.Response.WriteAsync(json);
+            }
             else throw;
-
         }
-
     }
 
     private static string ToSnakeCase(string input)

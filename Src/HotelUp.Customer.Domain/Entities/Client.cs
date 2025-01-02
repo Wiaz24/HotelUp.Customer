@@ -8,4 +8,8 @@ public class Client : Entity<Guid>
     {
         Id = id;
     }
+    
+    private Client()
+    {
+    }
 }

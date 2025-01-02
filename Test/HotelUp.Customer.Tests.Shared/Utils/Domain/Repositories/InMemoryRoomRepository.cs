@@ -5,9 +5,9 @@ using HotelUp.Customer.Domain.Factories.Abstractions;
 using HotelUp.Customer.Domain.Repositories;
 using HotelUp.Customer.Domain.ValueObjects;
 
-namespace HotelUp.Customer.Unit.Domain.Repositories;
+namespace HotelUp.Customer.Tests.Shared.Utils.Domain.Repositories;
 
-internal class TestRoomRepository : IRoomRepository
+public class InMemoryRoomRepository : IRoomRepository
 {
     // public Dictionary<Guid, Reservation> Reservations = new();
     public readonly List<Reservation> Reservations = new();
@@ -15,7 +15,7 @@ internal class TestRoomRepository : IRoomRepository
     private readonly ImageUrl _exampleImageUrl = new("http://www.yourserver.com/logo.png");
     private readonly IRoomFactory _roomFactory;
 
-    public TestRoomRepository()
+    public InMemoryRoomRepository()
     {
         _roomFactory = new RoomFactory(this);
     }
@@ -40,5 +40,23 @@ internal class TestRoomRepository : IRoomRepository
     public Task<Room?> GetRoomAsync(int number)
     {
         return Task.FromResult(Rooms.TryGetValue(number, out var room) ? room : null);
+    }
+
+    public Task AddAsync(Room room)
+    {
+        Rooms.Add(room.Number, room);
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateAsync(Room room)
+    {
+        Rooms[room.Number] = room;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(Room room)
+    {
+        Rooms.Remove(room.Number);
+        return Task.CompletedTask;
     }
 }

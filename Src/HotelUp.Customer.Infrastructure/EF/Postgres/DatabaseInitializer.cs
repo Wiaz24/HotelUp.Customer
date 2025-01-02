@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using HotelUp.Customer.Infrastructure.EF.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,8 +30,13 @@ public class DatabaseInitializer : IHostedService
         if (shouldMigrate is false)
             return;
         
-        var dbContextTypes = Assembly.GetCallingAssembly().GetTypes()
-            .Where(x => typeof(DbContext).IsAssignableFrom(x) && !x.IsInterface && x != typeof(DbContext));
+        // var dbContextTypes = Assembly.GetCallingAssembly().GetTypes()
+        //     .Where(x => typeof(DbContext).IsAssignableFrom(x) && !x.IsInterface && x != typeof(DbContext));
+        var dbContextTypes = new List<Type>
+        {
+            typeof(ReadDbContext),
+            typeof(WriteDbContext)
+        };
 
         using var scope = _serviceProvider.CreateScope();
         foreach (var dbContextType in dbContextTypes)

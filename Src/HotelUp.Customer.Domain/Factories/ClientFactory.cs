@@ -21,6 +21,6 @@ public class ClientFactory : IClientFactory
         {
             throw new ClientAlreadyExistsException(id);
         }
-        return new Client(Guid.NewGuid());
+        return new Client(id);
     }
 }

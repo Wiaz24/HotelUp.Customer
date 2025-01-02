@@ -4,7 +4,7 @@ using HotelUp.Customer.Domain.ValueObjects;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
-namespace HotelUp.Customer.Unit.Domain.Utils;
+namespace HotelUp.Customer.Tests.Shared.Utils;
 
 public static class HotelDayGenerator
 {
