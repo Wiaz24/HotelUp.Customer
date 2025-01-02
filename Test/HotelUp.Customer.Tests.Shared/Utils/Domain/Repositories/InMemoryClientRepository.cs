@@ -1,9 +1,9 @@
 using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Domain.Repositories;
 
-namespace HotelUp.Customer.Unit.Domain.Repositories;
+namespace HotelUp.Customer.Tests.Shared.Utils.Domain.Repositories;
 
-public class TestClientRepository : IClientRepository
+public class InMemoryClientRepository : IClientRepository
 {
     public readonly Dictionary<Guid, Client> Clients = new();
 

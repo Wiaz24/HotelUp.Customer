@@ -3,6 +3,7 @@ using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HotelUp.Customer.Infrastructure.EF.Config;
 
@@ -31,7 +32,16 @@ internal sealed class WriteConfiguration
                 status => Enum.Parse<ReservationStatus>(status))
             .HasColumnName("Status");
 
-        builder.ComplexProperty(x => x.Period);
+        builder.ComplexProperty(x => x.Period)
+            .Property(p => p.From)
+            .HasConversion(
+                d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
+                d => d);
+        builder.ComplexProperty(x => x.Period)
+            .Property(p => p.To)
+            .HasConversion(
+                d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
+                d => d);
 
         builder.HasMany(x => x.Tenants)
             .WithOne()
@@ -175,6 +185,9 @@ internal sealed class WriteConfiguration
         builder.ComplexProperty(x => x.Amount);
         
         builder.Property(x => x.SettlementDate)
+            .HasConversion(
+                date => DateTime.SpecifyKind(date, DateTimeKind.Utc),
+                date => date)
             .HasColumnName("SettlementDate");
         
         builder.ToTable("Payments");

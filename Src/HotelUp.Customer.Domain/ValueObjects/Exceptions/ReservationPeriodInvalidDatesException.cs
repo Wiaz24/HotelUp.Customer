@@ -4,7 +4,7 @@ namespace HotelUp.Customer.Domain.ValueObjects.Exceptions;
 
 public class ReservationPeriodInvalidDatesException : AppException
 {
-    public ReservationPeriodInvalidDatesException() : base("Reservation to date must be greater than from date.")
+    public ReservationPeriodInvalidDatesException() : base("Reservation start date must be greater than end date.")
     {
     }
 }

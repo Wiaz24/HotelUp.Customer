@@ -5,7 +5,7 @@ using HotelUp.Customer.Domain.Policies.TenantPricePolicy.Options;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
-namespace HotelUp.Customer.Unit.Domain.Utils;
+namespace HotelUp.Customer.Tests.Shared.Utils;
 
 public static class PoliciesGenerator
 {

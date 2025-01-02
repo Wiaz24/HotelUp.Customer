@@ -16,12 +16,14 @@ public class CommandsController : ControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IBus _bus;
+    private readonly ILogger<CommandsController> _logger;
     private Guid LoggedInUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) 
         is { } id ? new Guid(id) : throw new TokenException("No user id found in access token.");
-    public CommandsController(ICommandDispatcher commandDispatcher, IBus bus)
+    public CommandsController(ICommandDispatcher commandDispatcher, IBus bus, ILogger<CommandsController> logger)
     {
         _commandDispatcher = commandDispatcher;
         _bus = bus;
+        _logger = logger;
     }
 
     [HttpPost("create-reservation")]
@@ -35,7 +37,7 @@ public class CommandsController : ControllerBase
             dto.StartDate, 
             dto.EndDate);
         await _commandDispatcher.DispatchAsync(command);
-        return Created();
+        return Created("Reservation created successfully", null);
     }
     
     [HttpPost("create-room")]
@@ -46,16 +48,12 @@ public class CommandsController : ControllerBase
         return Created();
     }
     
-    [HttpPost("test-user-created-event")]
+    [HttpPost("create-client")]
+    [Authorize]
     public async Task<IActionResult> TestUserCreatedEvent()
     {
-        await _bus.Publish(new UserCreatedEvent(Guid.NewGuid()));
-        return Created();
-    }
-    
-    [HttpPost("test-user-created-event/{id}")]
-    public async Task<IActionResult> TestUserCreatedEvent(Guid id)
-    {
+        var id = LoggedInUserId;
+        _logger.LogWarning("Creating user with id: {Id}", id);
         await _bus.Publish(new UserCreatedEvent(id));
         return Created();
     }

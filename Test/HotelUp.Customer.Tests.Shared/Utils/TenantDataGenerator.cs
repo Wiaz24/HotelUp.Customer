@@ -1,12 +1,10 @@
 using HotelUp.Customer.Domain.Consts;
-using HotelUp.Customer.Domain.Entities;
-using HotelUp.Customer.Domain.ValueObjects;
 
-namespace HotelUp.Customer.Unit.Domain.Utils;
+namespace HotelUp.Customer.Tests.Shared.Utils;
 
-internal static class TenantDataGenerator
+public static class TenantDataGenerator
 {
-    internal static IEnumerable<TenantData> GenerateSampleTenantsData(int count)
+    public static IEnumerable<TenantData> GenerateSampleTenantsData(int count)
     {
         var tenants = new List<TenantData>();
         for (var i = 0; i < count; i++)

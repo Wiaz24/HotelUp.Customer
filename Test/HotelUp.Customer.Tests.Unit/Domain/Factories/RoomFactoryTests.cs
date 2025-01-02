@@ -2,7 +2,7 @@ using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Factories;
 using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.ValueObjects;
-using HotelUp.Customer.Unit.Domain.Repositories;
+using HotelUp.Customer.Tests.Shared.Utils.Domain.Repositories;
 using Shouldly;
 
 namespace HotelUp.Customer.Unit.Domain.Factories;
@@ -13,7 +13,7 @@ public class RoomFactoryTests
     public async Task Create_IfRoomDoesNotExists_ShouldCreateRoom()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
+        var roomRepository = new InMemoryRoomRepository();
         var roomFactory = new RoomFactory(roomRepository);
         
         // Act
@@ -34,7 +34,7 @@ public class RoomFactoryTests
     public async Task Create_IfRoomExists_ThrowsRoomAlreadyExistsException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
+        var roomRepository = new InMemoryRoomRepository();
         var roomFactory = new RoomFactory(roomRepository);
         var firstRoom = await roomFactory
             .Create(1,

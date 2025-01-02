@@ -5,8 +5,8 @@ using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
 using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
 using HotelUp.Customer.Domain.ValueObjects;
-using HotelUp.Customer.Unit.Domain.Repositories;
-using HotelUp.Customer.Unit.Domain.Utils;
+using HotelUp.Customer.Tests.Shared.Utils;
+using HotelUp.Customer.Tests.Shared.Utils.Domain.Repositories;
 using Shouldly;
 
 namespace HotelUp.Customer.Unit.Domain.Factories;
@@ -30,8 +30,8 @@ public class ReservationFactoryTests
     public async Task Create_FirstReservationEver_ShouldCreate()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies, 
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -60,8 +60,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNoRoomsAvailable_ThrowsNoRoomsAvailableException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -88,8 +88,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNotEnoughRoomSpace_ThrowsNotEnoughRoomSpaceException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -116,8 +116,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNoTenants_ThrowsCannotCreateReservationWithoutTenantsException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -143,8 +143,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenNoRooms_ThrowsCannotCreateReservationWithoutRoomsException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
@@ -170,8 +170,8 @@ public class ReservationFactoryTests
     public async Task Create_WhenSelectedRoomIsUnavailable_ThrowsSomeRoomsAreUnavailableException()
     {
         // Arrange
-        var roomRepository = new TestRoomRepository();
-        var clientRepository = new TestClientRepository();
+        var roomRepository = new InMemoryRoomRepository();
+        var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
             _tenantPricePolicy, roomRepository, _hotelDayFactory);
         var clientFactory = new ClientFactory(clientRepository);
