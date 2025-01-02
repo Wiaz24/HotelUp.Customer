@@ -1,21 +1,25 @@
+using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Domain.Consts;
 
 namespace HotelUp.Customer.Tests.Shared.Utils;
 
 public static class TenantDataGenerator
 {
-    public static IEnumerable<TenantData> GenerateSampleTenantsData(int count)
+    public static IEnumerable<TenantDataDto> GenerateSampleTenantsDataDtos(int count)
     {
-        var tenants = new List<TenantData>();
+        var tenants = new List<TenantDataDto>();
         for (var i = 0; i < count; i++)
         {
-            var firstName = $"John{i}";
-            var lastName = $"Doe{i}";
-            var email = $"johndoe{i}@email.com";
-            var phoneNumber = "123456789";
-            var pesel = "78060399743";
-            var documentType = DocumentType.Passport;
-            tenants.Add(new TenantData(firstName, lastName, email, phoneNumber, pesel, documentType));
+            var data = new TenantDataDto()
+            {
+                FirstName = $"John{i}",
+                LastName = $"Doe{i}",
+                Email = $"johndoe{i}@email.com",
+                PhoneNumber = "123456789",
+                Pesel = "78060399743",
+                DocumentType = DocumentType.Passport
+            };
+            tenants.Add(data);
         }
         return tenants;
     }

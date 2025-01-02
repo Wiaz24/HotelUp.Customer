@@ -39,7 +39,8 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(5);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(1);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(1)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -68,7 +69,8 @@ public class ReservationFactoryTests
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
 
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(2);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(2)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -97,7 +99,8 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(20, 2);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(6);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(6)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -152,7 +155,8 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(5);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(1);
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(1)
+            .Select(dto => dto.ToTenantData());
 
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
@@ -180,7 +184,9 @@ public class ReservationFactoryTests
         clientRepository.Clients.Add(client.Id, client);
 
         await roomRepository.CreateSampleRooms(5);
-        var tenantData = TenantDataGenerator.GenerateSampleTenantsData(1).ToList();
+        var tenantData = TenantDataGenerator.GenerateSampleTenantsDataDtos(1)
+            .Select(dto => dto.ToTenantData())
+            .ToList();
         var startDate = new DateOnly(2022, 1, 1);
         var endDate = new DateOnly(2022, 1, 7);
         

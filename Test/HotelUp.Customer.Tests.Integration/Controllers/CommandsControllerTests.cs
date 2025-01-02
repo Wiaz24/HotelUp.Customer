@@ -46,7 +46,7 @@ public class CommandsControllerTests : ControllerTestsBase
         var reservationRequest = new CreateReservationDto()
         {
             RoomNumbers = new [] { 1 },
-            TenantsData = TenantDataGenerator.GenerateSampleTenantsData(2).ToArray(),
+            TenantsData = TenantDataGenerator.GenerateSampleTenantsDataDtos(2).ToArray(),
             StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
             EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
         };
