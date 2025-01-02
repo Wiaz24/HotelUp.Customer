@@ -7,6 +7,7 @@ using HotelUp.Customer.Shared.Exceptions;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace HotelUp.Customer.API.Controllers;
 
@@ -25,31 +26,40 @@ public class CommandsController : ControllerBase
         _bus = bus;
         _logger = logger;
     }
-
-    [HttpPost("create-reservation")]
+    
     [Authorize]
+    [HttpPost("create-reservation")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    [SwaggerOperation("Create new reservation")]
     public async  Task<IActionResult> CreateReservation([FromBody] CreateReservationDto dto)
     {
         var command = new CreateReservation(
             LoggedInUserId, 
             dto.RoomNumbers, 
-            dto.TenantsData, 
+            dto.TenantsData.Select(dto => dto.ToTenantData()), 
             dto.StartDate, 
             dto.EndDate);
         await _commandDispatcher.DispatchAsync(command);
         return Created("Reservation created successfully", null);
     }
     
-    [HttpPost("create-room")]
     [Authorize]
-    public async Task<IActionResult> CreateRoom([FromBody] CreateRoom command)
+    [HttpPost("create-room")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    [SwaggerOperation("Create new room")]
+    public async Task<IActionResult> CreateRoom([FromBody] CreateRoomDto dto)
     {
+        var command = dto.ToCreateRoom();
         await _commandDispatcher.DispatchAsync(command);
         return Created();
     }
     
-    [HttpPost("create-client")]
     [Authorize]
+    [HttpPost("create-client")]
+    [Obsolete]
+    [SwaggerOperation("ONLY FOR TESTING! Create new client")]
     public async Task<IActionResult> TestUserCreatedEvent()
     {
         var id = LoggedInUserId;
