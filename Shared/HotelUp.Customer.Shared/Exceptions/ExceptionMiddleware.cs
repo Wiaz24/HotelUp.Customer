@@ -34,6 +34,15 @@ public class ExceptionMiddleware : IMiddleware
                 var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
                 await context.Response.WriteAsync(json);
             }
+            else if (type.IsConcreteAndAssignableTo<NotFoundException>())
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                context.Response.ContentType = "application/json";
+            
+                var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
+                var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
+                await context.Response.WriteAsync(json);
+            }
             else if (type.IsConcreteAndAssignableTo<DatabaseException>())
             {
                 context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;

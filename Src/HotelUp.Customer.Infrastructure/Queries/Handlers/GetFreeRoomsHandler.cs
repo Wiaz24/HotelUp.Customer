@@ -1,6 +1,7 @@
 using HotelUp.Customer.Application.Queries;
 using HotelUp.Customer.Application.Queries.Abstractions;
 using HotelUp.Customer.Application.Queries.DTOs;
+using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Infrastructure.EF.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,14 +17,22 @@ public class GetFreeRoomsHandler : IQueryHandler<GetFreeRooms, IEnumerable<RoomD
     
     public async Task<IEnumerable<RoomDto>> HandleAsync(GetFreeRooms query)
     {
-        var occupiedRooms = _context.Reservations
+        var roomsQuery = _context.Rooms
             .AsNoTracking()
-            .Where(r => !(r.Period.To < query.StartDate || r.Period.From > query.EndDate))
-            .SelectMany(r => r.Rooms);
-        var result = await _context.Rooms
-            .AsNoTracking()
-            .Except(occupiedRooms)
-            .ToListAsync();
-        return result.Select(r => new RoomDto(r));
+            .Except(_context.Reservations
+                .AsNoTracking()
+                .Where(r => r.Status == ReservationStatus.Valid)
+                .Where(r => !(r.Period.To < query.StartDate || r.Period.From > query.EndDate))
+                .SelectMany(r => r.Rooms))
+            .AsQueryable();
+        if (query.RoomType is not null)
+        {
+            roomsQuery = roomsQuery.Where(r => r.Type == query.RoomType);
+        }
+        if (query.RoomCapacity is not null)
+        {
+            roomsQuery = roomsQuery.Where(r => r.Capacity == query.RoomCapacity);
+        }
+        return (await roomsQuery.ToListAsync()).Select(x => new RoomDto(x));
     }
 }

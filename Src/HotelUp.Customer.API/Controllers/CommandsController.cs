@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using HotelUp.Customer.API.DTOs;
+using HotelUp.Customer.Application.ApplicationServices;
 using HotelUp.Customer.Application.Commands;
 using HotelUp.Customer.Application.Commands.Abstractions;
 using HotelUp.Customer.Application.Events.External;
@@ -18,13 +19,16 @@ public class CommandsController : ControllerBase
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IBus _bus;
     private readonly ILogger<CommandsController> _logger;
+    private readonly IReservationOwnershipService _reservationOwnershipService; 
     private Guid LoggedInUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) 
         is { } id ? new Guid(id) : throw new TokenException("No user id found in access token.");
-    public CommandsController(ICommandDispatcher commandDispatcher, IBus bus, ILogger<CommandsController> logger)
+    public CommandsController(ICommandDispatcher commandDispatcher, IBus bus, 
+        ILogger<CommandsController> logger, IReservationOwnershipService reservationOwnershipService)
     {
         _commandDispatcher = commandDispatcher;
         _bus = bus;
         _logger = logger;
+        _reservationOwnershipService = reservationOwnershipService;
     }
     
     [Authorize]
@@ -42,6 +46,24 @@ public class CommandsController : ControllerBase
             dto.EndDate);
         var id = await _commandDispatcher.DispatchAsync<CreateReservation, Guid>(command);
         return Created($"api/customer/queries/get-users-reservation/{id}", id);
+    }
+    
+    [Authorize]
+    [HttpPost("cancel-reservation/{id}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
+    [SwaggerOperation("Cancel reservation by id")]
+    public async Task<IActionResult> CancelReservation([FromRoute] Guid id)
+    {
+        if (!await _reservationOwnershipService.IsReservationOwner(id, LoggedInUserId))
+        {
+            return Unauthorized();
+        }
+        var command = new CancelReservation(id);
+        await _commandDispatcher.DispatchAsync(command);
+        return NoContent();
     }
     
     [Authorize]

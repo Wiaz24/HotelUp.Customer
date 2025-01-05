@@ -26,11 +26,11 @@ public class QueriesController : ControllerBase
     
     [HttpGet("free-rooms")]
     [ProducesResponseType(200)]
-    [SwaggerOperation("Returns all free rooms in the given period")]
+    [SwaggerOperation("Returns free rooms for provided query parameters")]
     public async Task<ActionResult<IEnumerable<RoomDto>>> Get([FromQuery] GetFreeRoomsDto dto)
     {
         var result = await _queryDispatcher
-            .DispatchAsync(new GetFreeRooms(dto.StartDate, dto.EndDate));
+            .DispatchAsync(new GetFreeRooms(dto.StartDate, dto.EndDate, dto.RoomType, dto.RoomCapacity));
         return Ok(result);
     }
     
