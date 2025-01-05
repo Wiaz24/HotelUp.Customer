@@ -37,11 +37,11 @@ public class CommandsController : ControllerBase
         var command = new CreateReservation(
             LoggedInUserId, 
             dto.RoomNumbers, 
-            dto.TenantsData.Select(dto => dto.ToTenantData()), 
+            dto.TenantsData.Select(td => td.ToTenantData()), 
             dto.StartDate, 
             dto.EndDate);
-        await _commandDispatcher.DispatchAsync(command);
-        return Created("Reservation created successfully", null);
+        var id = await _commandDispatcher.DispatchAsync<CreateReservation, Guid>(command);
+        return Created($"api/customer/queries/get-users-reservation/{id}", id);
     }
     
     [Authorize]

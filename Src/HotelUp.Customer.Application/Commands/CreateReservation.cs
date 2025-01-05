@@ -10,4 +10,4 @@ public record CreateReservation(
     IEnumerable<TenantData> TenantsData,
     DateOnly StartDate,
     DateOnly EndDate) 
-    : ICommand;
+    : ICommand<Guid>;
