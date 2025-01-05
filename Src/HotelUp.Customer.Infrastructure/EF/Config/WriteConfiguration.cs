@@ -10,62 +10,14 @@ namespace HotelUp.Customer.Infrastructure.EF.Config;
 internal sealed class WriteConfiguration
     : IEntityTypeConfiguration<Reservation>, 
         IEntityTypeConfiguration<Client>, 
-        IEntityTypeConfiguration<Room>,
-        IEntityTypeConfiguration<Tenant>,
-        IEntityTypeConfiguration<Bill>,
-        IEntityTypeConfiguration<AdditionalCost>,
-        IEntityTypeConfiguration<Payment>
+        IEntityTypeConfiguration<Room>
 {
-    public void Configure(EntityTypeBuilder<Reservation> builder)
-    {
-        builder.HasKey(x => x.Id);
-        
-        builder.Property<uint>("Version")
-            .IsRowVersion();
-
-        builder.HasOne(x => x.Client)
-            .WithMany();
-        
-        builder.Property(x => x.Status)
-            .HasConversion(
-                status => status.ToString(),
-                status => Enum.Parse<ReservationStatus>(status))
-            .HasColumnName("Status");
-
-        builder.ComplexProperty(x => x.Period)
-            .Property(p => p.From)
-            .HasConversion(
-                d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
-                d => d);
-        builder.ComplexProperty(x => x.Period)
-            .Property(p => p.To)
-            .HasConversion(
-                d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
-                d => d);
-
-        builder.HasMany(x => x.Tenants)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x => x.Rooms)
-            .WithMany();
-        
-        builder.HasOne(x => x.Bill)
-            .WithOne()
-            .HasForeignKey<Bill>(b => b.Id)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.ToTable("Reservations");
-    }
-
     public void Configure(EntityTypeBuilder<Client> builder)
     {
         builder.HasKey(x => x.Id);
         
         builder.ToTable("Clients");
     }
-
     public void Configure(EntityTypeBuilder<Room> builder)
     {
         builder.HasKey(x => x.Id);
@@ -73,123 +25,114 @@ internal sealed class WriteConfiguration
         builder.Property<uint>("Version")
             .IsRowVersion();
         
+        builder.Property(x => x.Type);
+        
         builder.Property(x => x.Capacity)
             .HasConversion(
                 cap => cap.Value,
-                cap => new RoomCapacity(cap))
-            .HasColumnName("Capacity");
-        
+                cap => new RoomCapacity(cap));
+
         builder.Property(x => x.Floor)
             .HasConversion(
                 floor => floor.Value,
-                floor => new RoomFloor(floor))
-            .HasColumnName("Floor");
+                floor => new RoomFloor(floor));
 
-        builder.Property(x => x.WithSpecialNeeds)
-            .HasColumnName("WithSpecialNeeds");
-        
-        builder.Property(x => x.Type)
-            .HasConversion(
-                type => type.ToString(),
-                type => Enum.Parse<RoomType>(type))
-            .HasColumnName("Type");
-        
+        builder.Property(x => x.WithSpecialNeeds);
+
+        builder.Property(x => x.Type);
+
         builder.Property(x => x.ImageUrl)
             .HasConversion(
                 url => url.Value,
-                url => new ImageUrl(url))
-            .HasColumnName("ImageUrl");
+                url => new ImageUrl(url));
         
         builder.ToTable("Rooms");
     }
-
-    public void Configure(EntityTypeBuilder<Tenant> builder)
+    public void Configure(EntityTypeBuilder<Reservation> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property<uint>("Version")
+            .IsRowVersion();
         
-        builder.Property(x => x.FirstName)
-            .HasConversion(
-                name => name.Value,
-                name => new FirstName(name))
-            .HasColumnName("FirstName");
+        builder.Property(x => x.Status);
         
-        builder.Property(x => x.LastName)
-            .HasConversion(
-                name => name.Value,
-                name => new LastName(name))
-            .HasColumnName("LastName");
+        builder.ComplexProperty(x => x.Period, cp =>
+        {
+            cp.Property(p => p.From)
+                .HasConversion(
+                    d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
+                    d => d);
+            cp.Property(p => p.To)
+                .HasConversion(
+                    d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
+                    d => d);
+        });
         
-        builder.Property(x => x.PhoneNumber)
-            .HasConversion(
-                phone => phone.Value,
-                phone => new PhoneNumber(phone))
-            .HasColumnName("PhoneNumber");
+        builder.HasMany(x => x.Rooms)
+            .WithMany();
         
-        builder.Property(x => x.Email)
-            .HasConversion(
-                email => email.Value,
-                email => new Email(email))
-            .HasColumnName("Email");
+        builder.HasOne(x => x.Client)
+            .WithMany();
         
-        builder.Property(x => x.Pesel)
-            .HasConversion(
-                pesel => pesel.Value,
-                pesel => new Pesel(pesel))
-            .HasColumnName("Pesel");
-        
-        builder.Property(x => x.DocumentType)
-            .HasConversion(
-                type => type.ToString(),
-                type => Enum.Parse<DocumentType>(type))
-            .HasColumnName("DocumentType");
-        
-        builder.Property(x => x.Status)
-            .HasConversion(
-                status => status.ToString(),
-                status => Enum.Parse<PresenceStatus>(status))
-            .HasColumnName("Status");
-        
-        builder.ToTable("Tenants");
-    }
+        builder.OwnsOne(x => x.Bill, b =>
+        {
+            b.WithOwner();
+            
+            b.Property(p => p.AccomodationPrice)
+                .HasConversion<MoneyConverter>();
+            
+            b.OwnsMany(x => x.Payments, pb =>
+            {
+                pb.WithOwner()
+                    .HasPrincipalKey(p => p.Id);
 
-    public void Configure(EntityTypeBuilder<Bill> builder)
-    {
-        builder.HasKey(x => x.Id);
-
-        builder.ComplexProperty(x => x.AccomodationPrice);
-        
-        builder.HasMany(x => x.AdditionalCosts)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x => x.Payments)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.ToTable("Bills");
-    }
-
-    public void Configure(EntityTypeBuilder<AdditionalCost> builder)
-    {
-        builder.HasKey(x => x.Id);
-        
-        builder.ComplexProperty(x => x.Price);
+                pb.Property(p => p.Amount)
+                    .HasConversion<MoneyConverter>();
                 
-        builder.ToTable("AdditionalCosts");
-    }
+                pb.Property(p => p.SettlementDate)
+                    .HasConversion(
+                        date => DateTime.SpecifyKind(date, DateTimeKind.Utc),
+                        date => date);
+            });
+            
+            b.OwnsMany(x => x.AdditionalCosts, ac =>
+            {
+                ac.WithOwner()
+                    .HasPrincipalKey(p => p.Id);
 
-    public void Configure(EntityTypeBuilder<Payment> builder)
-    {
-        builder.HasKey(x => x.Id);
+                ac.Property(p => p.Price)
+                    .HasConversion<MoneyConverter>();
+            });
+            
+            b.ToTable("Bills");
+        });
         
-        builder.ComplexProperty(x => x.Amount);
+        builder.OwnsMany(x => x.Tenants, tb =>
+        {
+            tb.WithOwner()
+                .HasPrincipalKey(p => p.Id);
+
+            tb.Property(x => x.FirstName)
+                .HasConversion<FirstNameConverter>();
+
+            tb.Property(x => x.LastName)
+                .HasConversion<LastNameConverter>();
+
+            tb.Property(x => x.PhoneNumber)
+                .HasConversion<PhoneNumberConverter>();
+
+            tb.Property(x => x.Email)
+                .HasConversion<EmailConverter>();
+
+            tb.Property(x => x.Pesel)
+                .HasConversion<PeselConverter>();
+
+            tb.Property(x => x.DocumentType);
+            tb.Property(x => x.Status);
+            
+            tb.ToTable("Tenants");
+        });
         
-        builder.Property(x => x.SettlementDate)
-            .HasConversion(
-                date => DateTime.SpecifyKind(date, DateTimeKind.Utc),
-                date => date)
-            .HasColumnName("SettlementDate");
-        
-        builder.ToTable("Payments");
+        builder.ToTable("Reservations");
     }
 }

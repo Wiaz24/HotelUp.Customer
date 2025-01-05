@@ -5,7 +5,7 @@ namespace HotelUp.Customer.Domain.ValueObjects;
 
 public record ImageUrl
 {
-    public string Value { get; init; }
+    public string Value { get; private init; }
 
     private ImageUrl(){}
     public ImageUrl(string value)

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using HotelUp.Customer.Domain.ValueObjects.Exceptions;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
@@ -38,5 +39,14 @@ public record PhoneNumber
                 .NotEmpty()
                 .Matches(@"^(\+)?(\s*\d+\s*){9,}$");
         }
+    }
+}
+
+public class PhoneNumberConverter : ValueConverter<PhoneNumber, string>
+{
+    public PhoneNumberConverter() : base(
+        v => v.Value,
+        v => new PhoneNumber(v))
+    {
     }
 }
