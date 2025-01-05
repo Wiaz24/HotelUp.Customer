@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using System.ComponentModel;
+using System.Security.Claims;
+using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Application.Queries;
 using HotelUp.Customer.Application.Queries.Abstractions;
 using HotelUp.Customer.Application.Queries.DTOs;
@@ -19,10 +21,10 @@ public class QueriesController : ControllerBase
     }
     
     [HttpGet("free-rooms")]
-    public async Task<ActionResult<IEnumerable<RoomDto>>> Get(
-        [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+    public async Task<ActionResult<IEnumerable<RoomDto>>> Get([FromQuery] GetFreeRoomsDto dto)
     {
-        var result = await _queryDispatcher.DispatchAsync(new GetFreeRooms(startDate, endDate));
+        var result = await _queryDispatcher
+            .DispatchAsync(new GetFreeRooms(dto.StartDate, dto.EndDate));
         return Ok(result);
     }
     

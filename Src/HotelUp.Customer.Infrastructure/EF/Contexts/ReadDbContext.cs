@@ -1,14 +1,15 @@
+using HotelUp.Customer.Domain.Consts;
+using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Infrastructure.EF.Config;
-using HotelUp.Customer.Infrastructure.EF.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelUp.Customer.Infrastructure.EF.Contexts;
 
 public class ReadDbContext : DbContext
 {
-    // public DbSet<RoomReadModel> Rooms { get; set; }
-    // public DbSet<ReservationReadModel> Reservations { get; set; }
-    // public DbSet<ClientReadModel> Clients { get; set; }
+    public DbSet<Room> Rooms { get; set; }
+    public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<Client> Clients { get; set; }
     
     public ReadDbContext(DbContextOptions<ReadDbContext> options) 
         : base(options)
@@ -17,12 +18,16 @@ public class ReadDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("HotelUp.Customer");
+        modelBuilder.HasDefaultSchema("customer");
+        modelBuilder.HasPostgresEnum<DocumentType>();
+        modelBuilder.HasPostgresEnum<PresenceStatus>();
+        modelBuilder.HasPostgresEnum<ReservationStatus>();
+        modelBuilder.HasPostgresEnum<RoomType>();
         
-        // var configuration = new ReadConfiguration();
-        // modelBuilder.ApplyConfiguration<RoomReadModel>(configuration);
-        // modelBuilder.ApplyConfiguration<ReservationReadModel>(configuration);
-        // modelBuilder.ApplyConfiguration<ClientReadModel>(configuration);
+        var configuration = new ReadWriteConfiguration();
+        modelBuilder.ApplyConfiguration<Room>(configuration);
+        modelBuilder.ApplyConfiguration<Reservation>(configuration);
+        modelBuilder.ApplyConfiguration<Client>(configuration);
         
         base.OnModelCreating(modelBuilder);
     }

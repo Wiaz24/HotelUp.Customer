@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HotelUp.Customer.Infrastructure.EF.Config;
 
-internal sealed class WriteConfiguration
+internal sealed class ReadWriteConfiguration
     : IEntityTypeConfiguration<Reservation>, 
         IEntityTypeConfiguration<Client>, 
         IEntityTypeConfiguration<Room>
@@ -67,7 +67,7 @@ internal sealed class WriteConfiguration
                     d => DateTime.SpecifyKind(d, DateTimeKind.Utc),
                     d => d);
         });
-        
+
         builder.HasMany(x => x.Rooms)
             .WithMany();
         

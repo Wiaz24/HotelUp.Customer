@@ -24,7 +24,7 @@ public class WriteDbContext : DbContext
         modelBuilder.HasPostgresEnum<ReservationStatus>();
         modelBuilder.HasPostgresEnum<RoomType>();
         
-        var configuration = new WriteConfiguration();
+        var configuration = new ReadWriteConfiguration();
         modelBuilder.ApplyConfiguration<Reservation>(configuration);
         modelBuilder.ApplyConfiguration<Client>(configuration);
         modelBuilder.ApplyConfiguration<Room>(configuration);
