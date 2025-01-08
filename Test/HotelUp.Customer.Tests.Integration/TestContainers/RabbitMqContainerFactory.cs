@@ -5,7 +5,7 @@ namespace HotelUp.Customer.Tests.Integration.TestContainers;
 
 internal static class RabbitMqContainerFactory
 {
-    private const int StartPort = 5672;
+    private const int StartPort = 5673;
     private static int _numInstances = 0;
     private static int GetPort => StartPort + Interlocked.Increment(ref _numInstances) - 1;
     internal static RabbitMqContainer Create()
