@@ -11,10 +11,10 @@ public class Reservation : AggregateRoot<Guid>
     public ReservationStatus Status { get; private set; }
     public ReservationPeriod Period { get; private set; } = null!;
 
-    private List<Tenant> _tenants = new();
+    private readonly List<Tenant> _tenants = new();
     public IEnumerable<Tenant> Tenants => _tenants;
     
-    private List<Room> _rooms = new();
+    private readonly List<Room> _rooms = new();
     public IEnumerable<Room> Rooms => _rooms;
     public Bill? Bill { get; private set; }
     

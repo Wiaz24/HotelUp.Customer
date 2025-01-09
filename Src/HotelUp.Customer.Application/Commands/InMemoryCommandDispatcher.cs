@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HotelUp.Customer.Application.Commands;
 
-public class InMemoryCommandDispatcher : ICommandDispatcher
+public sealed class InMemoryCommandDispatcher : ICommandDispatcher
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -18,7 +18,6 @@ public class InMemoryCommandDispatcher : ICommandDispatcher
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
         await handler.HandleAsync(command);
     }
-
     public async Task<TResult> DispatchAsync<TResult>(ICommand<TResult> command)
     {
         using var scope = _serviceProvider.CreateScope();
