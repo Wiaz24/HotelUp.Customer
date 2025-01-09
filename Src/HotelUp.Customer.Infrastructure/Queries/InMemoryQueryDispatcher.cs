@@ -18,10 +18,11 @@ public class InMemoryQueryDispatcher : IQueryDispatcher
         using var scope = _serviceProvider.CreateScope();
         var handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
         var handler = scope.ServiceProvider.GetRequiredService(handlerType);
+        var method = handlerType.GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.HandleAsync))
+            ?? throw new NullReferenceException("Handler does not have HandleAsync method");
         try
         {
-            var result =  await (Task<TResult>) handlerType.GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.HandleAsync))?
-                .Invoke(handler, new[] { query });
+            var result =  await (Task<TResult>) method.Invoke(handler, [query])!;
             return result;
         }
         catch (Exception e)

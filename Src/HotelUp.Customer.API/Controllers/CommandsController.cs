@@ -44,7 +44,7 @@ public class CommandsController : ControllerBase
             dto.TenantsData.Select(td => td.ToTenantData()), 
             dto.StartDate, 
             dto.EndDate);
-        var id = await _commandDispatcher.DispatchAsync<CreateReservation, Guid>(command);
+        var id = await _commandDispatcher.DispatchAsync(command);
         return Created($"api/customer/queries/get-users-reservation/{id}", id);
     }
     
