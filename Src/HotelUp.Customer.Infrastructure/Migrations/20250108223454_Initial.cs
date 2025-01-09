@@ -1,4 +1,5 @@
 ﻿using System;
+using HotelUp.Customer.Domain.Consts;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,11 +14,17 @@ namespace HotelUp.Customer.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "HotelUp.Customer");
+                name: "customer");
+
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:Enum:document_type", "passport,id_card")
+                .Annotation("Npgsql:Enum:presence_status", "pending,checked_in,checked_out")
+                .Annotation("Npgsql:Enum:reservation_status", "valid,canceled")
+                .Annotation("Npgsql:Enum:room_type", "economy,basic,premium");
 
             migrationBuilder.CreateTable(
                 name: "Clients",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false)
@@ -29,7 +36,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Rooms",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -37,7 +44,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                     Capacity = table.Column<int>(type: "integer", nullable: false),
                     Floor = table.Column<int>(type: "integer", nullable: false),
                     WithSpecialNeeds = table.Column<bool>(type: "boolean", nullable: false),
-                    Type = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<RoomType>(type: "customer.room_type", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
@@ -48,12 +55,12 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Reservations",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<ReservationStatus>(type: "customer.reservation_status", nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     Period_From = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Period_To = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -64,7 +71,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Reservations_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalSchema: "HotelUp.Customer",
+                        principalSchema: "customer",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -72,20 +79,21 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Bills",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccomodationPrice_Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    AccomodationPrice_Currency = table.Column<string>(type: "text", nullable: false)
+                    ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AccomodationPrice = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bills", x => x.Id);
+                    table.PrimaryKey("PK_Bills", x => x.ReservationId);
+                    table.UniqueConstraint("AK_Bills_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bills_Reservations_Id",
-                        column: x => x.Id,
-                        principalSchema: "HotelUp.Customer",
+                        name: "FK_Bills_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalSchema: "customer",
                         principalTable: "Reservations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -93,7 +101,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ReservationRoom",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 columns: table => new
                 {
                     ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -105,14 +113,14 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_ReservationRoom_Reservations_ReservationId",
                         column: x => x.ReservationId,
-                        principalSchema: "HotelUp.Customer",
+                        principalSchema: "customer",
                         principalTable: "Reservations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ReservationRoom_Rooms_RoomsId",
                         column: x => x.RoomsId,
-                        principalSchema: "HotelUp.Customer",
+                        principalSchema: "customer",
                         principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -120,141 +128,121 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Tenants",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Pesel = table.Column<string>(type: "text", nullable: false),
-                    DocumentType = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    ReservationId = table.Column<Guid>(type: "uuid", nullable: true)
+                    DocumentType = table.Column<DocumentType>(type: "customer.document_type", nullable: false),
+                    Status = table.Column<PresenceStatus>(type: "customer.presence_status", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                    table.PrimaryKey("PK_Tenants", x => new { x.ReservationId, x.Id });
                     table.ForeignKey(
                         name: "FK_Tenants_Reservations_ReservationId",
                         column: x => x.ReservationId,
-                        principalSchema: "HotelUp.Customer",
+                        principalSchema: "customer",
                         principalTable: "Reservations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AdditionalCosts",
-                schema: "HotelUp.Customer",
+                name: "AdditionalCost",
+                schema: "customer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    BillId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Price_Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Price_Currency = table.Column<string>(type: "text", nullable: false)
+                    BillId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Price = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AdditionalCosts", x => x.Id);
+                    table.PrimaryKey("PK_AdditionalCost", x => new { x.BillId, x.Id });
                     table.ForeignKey(
-                        name: "FK_AdditionalCosts_Bills_BillId",
+                        name: "FK_AdditionalCost_Bills_BillId",
                         column: x => x.BillId,
-                        principalSchema: "HotelUp.Customer",
+                        principalSchema: "customer",
                         principalTable: "Bills",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
-                schema: "HotelUp.Customer",
+                name: "Payment",
+                schema: "customer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SettlementDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    BillId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Amount_Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Amount_Currency = table.Column<string>(type: "text", nullable: false)
+                    BillId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Amount = table.Column<string>(type: "text", nullable: false),
+                    SettlementDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.PrimaryKey("PK_Payment", x => new { x.BillId, x.Id });
                     table.ForeignKey(
-                        name: "FK_Payments_Bills_BillId",
+                        name: "FK_Payment_Bills_BillId",
                         column: x => x.BillId,
-                        principalSchema: "HotelUp.Customer",
+                        principalSchema: "customer",
                         principalTable: "Bills",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AdditionalCosts_BillId",
-                schema: "HotelUp.Customer",
-                table: "AdditionalCosts",
-                column: "BillId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_BillId",
-                schema: "HotelUp.Customer",
-                table: "Payments",
-                column: "BillId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ReservationRoom_RoomsId",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 table: "ReservationRoom",
                 column: "RoomsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_ClientId",
-                schema: "HotelUp.Customer",
+                schema: "customer",
                 table: "Reservations",
                 column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tenants_ReservationId",
-                schema: "HotelUp.Customer",
-                table: "Tenants",
-                column: "ReservationId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AdditionalCosts",
-                schema: "HotelUp.Customer");
+                name: "AdditionalCost",
+                schema: "customer");
 
             migrationBuilder.DropTable(
-                name: "Payments",
-                schema: "HotelUp.Customer");
+                name: "Payment",
+                schema: "customer");
 
             migrationBuilder.DropTable(
                 name: "ReservationRoom",
-                schema: "HotelUp.Customer");
+                schema: "customer");
 
             migrationBuilder.DropTable(
                 name: "Tenants",
-                schema: "HotelUp.Customer");
+                schema: "customer");
 
             migrationBuilder.DropTable(
                 name: "Bills",
-                schema: "HotelUp.Customer");
+                schema: "customer");
 
             migrationBuilder.DropTable(
                 name: "Rooms",
-                schema: "HotelUp.Customer");
+                schema: "customer");
 
             migrationBuilder.DropTable(
                 name: "Reservations",
-                schema: "HotelUp.Customer");
+                schema: "customer");
 
             migrationBuilder.DropTable(
                 name: "Clients",
-                schema: "HotelUp.Customer");
+                schema: "customer");
         }
     }
 }

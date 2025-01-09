@@ -21,8 +21,6 @@ public class PostgresReservationRepository : IReservationRepository
         return _reservations
             .Include(r => r.Client)
             .Include(r => r.Rooms)
-            .Include(r => r.Tenants)
-            .Include(r => r.Bill)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 

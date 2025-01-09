@@ -7,7 +7,7 @@ using MassTransit;
 
 namespace HotelUp.Customer.Application.Commands.Handlers;
 
-public class CreateReservationHandler : ICommandHandler<CreateReservation>
+public class CreateReservationHandler : ICommandHandler<CreateReservation, Guid>
 {
     private readonly IClientRepository _clientRepository;
     private readonly IReservationFactory _reservationFactory;
@@ -23,7 +23,7 @@ public class CreateReservationHandler : ICommandHandler<CreateReservation>
         _bus = bus;
     }
 
-    public async Task HandleAsync(CreateReservation command)
+    public async Task<Guid> HandleAsync(CreateReservation command)
     {
         var client = await _clientRepository.GetAsync(command.ClientId);
         if (client is null)
@@ -34,5 +34,6 @@ public class CreateReservationHandler : ICommandHandler<CreateReservation>
             command.TenantsData.ToList(), command.StartDate, command.EndDate);
         await _reservationRepository.AddAsync(reservation);
         await _bus.Publish(new ReservationCreatedEvent(reservation));
+        return reservation.Id;
     }
 }

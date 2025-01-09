@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HotelUp.Customer.Application.Commands;
 
-public class InMemoryCommandDispatcher : ICommandDispatcher
+public sealed class InMemoryCommandDispatcher : ICommandDispatcher
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -16,15 +16,16 @@ public class InMemoryCommandDispatcher : ICommandDispatcher
     {
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
-        
         await handler.HandleAsync(command);
     }
-
-    public async Task<TResult> DispatchAsync<TCommand, TResult>(TCommand command) where TCommand : class, ICommand<TResult>
+    public async Task<TResult> DispatchAsync<TResult>(ICommand<TResult> command)
     {
         using var scope = _serviceProvider.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand, TResult>>();
+        var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
+        var handler = scope.ServiceProvider.GetRequiredService(handlerType);
+        var method = handlerType.GetMethod(nameof(ICommandHandler<ICommand<TResult>, TResult>.HandleAsync)) 
+                     ?? throw new NullReferenceException("Handler does not have HandleAsync method");
         
-        return await handler.HandleAsync(command);
+        return await (Task<TResult>) method.Invoke(handler, [command])!;
     }
 }

@@ -6,7 +6,7 @@ namespace HotelUp.Customer.Domain.Entities;
 public class AdditionalCost : Entity<Guid>
 {
     public Guid TaskId => Id;
-    public Money Price { get; private set; }
+    public Money Price { get; private set; } = null!;
 
     internal AdditionalCost(Money price)
     {

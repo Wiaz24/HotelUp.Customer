@@ -23,12 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Import\import.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup>
         <Using Include="Xunit"/>
     </ItemGroup>
 

@@ -1,10 +1,11 @@
-﻿using HotelUp.Customer.Domain.ValueObjects.Exceptions;
+using HotelUp.Customer.Domain.ValueObjects.Exceptions;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
 public record LastName
 {
-    public string Value { get; }
+    public string Value { get; private init; }
 
     public LastName(string value)
     {
@@ -16,7 +17,16 @@ public record LastName
         Value = value;
     }
 
-    public static implicit operator string(LastName lastName) => lastName.Value;
+    public static implicit operator string(LastName valueObject) => valueObject.Value;
+    public static implicit operator LastName(string value) => new(value);
+}
 
-    public static implicit operator LastName(string lastName) => new(lastName);
+
+public class LastNameConverter : ValueConverter<LastName, string>
+{
+    public LastNameConverter() : base(
+        v => v.Value,
+        v => new LastName(v))
+    {
+    }
 }

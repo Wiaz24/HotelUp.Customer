@@ -2,7 +2,7 @@
 
 namespace HotelUp.Customer.Domain.ValueObjects.Exceptions;
 
-public class HotelDayInvalidHoursException : AppException
+public class HotelDayInvalidHoursException : BusinessRuleException
 {
     public HotelDayInvalidHoursException() : base("End hour must be greater than start hour")
     {

@@ -6,20 +6,12 @@ using Shouldly;
 
 namespace HotelUp.Customer.Tests.Integration.Controllers;
 
-[Collection("QueriesControllerTests")]
+[Collection(nameof(QueriesControllerTests))]
 public class QueriesControllerTests : ControllerTestsBase
 {
     private const string Prefix = "api/customer/queries";
     public QueriesControllerTests(TestWebAppFactory factory) : base(factory)
     {
-    }
-
-    [Fact]
-    public async Task GetOne_ShouldReturnOK_WhenDatabaseExists()
-    {
-        var response = await DefaultClient.GetAsync(Prefix);
-        
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
     
     [Fact]

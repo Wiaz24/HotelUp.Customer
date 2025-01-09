@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace HotelUp.Customer.Tests.Integration.Controllers;
 
-[Collection("QueriesControllerTests")]
+[Collection(nameof(CommandsControllerTests))]
 public class CommandsControllerTests : ControllerTestsBase
 {
     private readonly ITestOutputHelper _testOutputHelper;
@@ -28,14 +28,13 @@ public class CommandsControllerTests : ControllerTestsBase
     public async Task CreateReservation_WhenValidRequest_ShouldReturnCreated()
     {
         // Arrange
-        _testOutputHelper.WriteLine("Creating a reservation");
         var clientId = Guid.NewGuid();
         var client = await ClientGenerator.GenerateSampleClient(clientId);
         DbContext.Clients.Add(client);
         var rooms = await RoomGenerator.GenerateSampleRooms(3, 2);
         DbContext.Rooms.AddRange(rooms);
         await DbContext.SaveChangesAsync();
-        _testOutputHelper.WriteLine("Client and rooms created");
+
         var httpClient = Factory.CreateClient();
         var token = MockJwtTokens.GenerateJwtToken(new []
         {
@@ -45,19 +44,52 @@ public class CommandsControllerTests : ControllerTestsBase
         
         var reservationRequest = new CreateReservationDto()
         {
-            RoomNumbers = new [] { 1 },
+            RoomNumbers = [1],
             TenantsData = TenantDataGenerator.GenerateSampleTenantsDataDtos(2).ToArray(),
             StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
             EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
         };
-        _testOutputHelper.WriteLine("Reservation request created");
         // Act
-        var response = await httpClient.PostAsJsonAsync($"{Prefix}/create-reservation", reservationRequest);
-        _testOutputHelper.WriteLine("Reservation request sent");
-        // Assert
-        // var message = await response.Content.ReadAsStringAsync();
-        // message.ShouldBe("Reservation created successfully");
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        HttpResponseMessage response = default!;
+        var exception = await Record.ExceptionAsync(async () =>
+        {
+            response = await httpClient.PostAsJsonAsync($"{Prefix}/create-reservation", reservationRequest);
+        });
         
+        // Assert
+        if (exception is not null)
+        {
+            _testOutputHelper.WriteLine(exception.ToString());
+        }
+        exception.ShouldBeNull();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task CreateClient_WhenTokenIsPresent_ShouldReturnCreated()
+    {
+        // Arrange
+        var clientId = Guid.NewGuid();
+        var client = Factory.CreateClient();
+        var token = MockJwtTokens.GenerateJwtToken(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, clientId.ToString())
+        });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        HttpResponseMessage response = default!;
+        var exception = await Record.ExceptionAsync(async () =>
+        {
+            response = await client.PostAsync($"{Prefix}/create-client", null);
+        });
+        
+        // Assert
+        if (exception is not null)
+        {
+            _testOutputHelper.WriteLine(exception.ToString());
+        }
+        exception.ShouldBeNull();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 }

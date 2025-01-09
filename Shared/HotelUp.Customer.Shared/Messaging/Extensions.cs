@@ -30,7 +30,7 @@ internal static class Extensions
         return services;
     }
 
-    private static Assembly[] GetAssembliesWithConsumers()
+    internal static Assembly[] GetAssembliesWithConsumers()
     {
         var assemblies = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())

@@ -5,8 +5,8 @@ namespace HotelUp.Customer.Domain.Entities;
 
 public class Bill : Entity<Guid>
 {
-    public Money AccomodationPrice { get; private set; }
-    
+    public Money AccomodationPrice { get; private set; } = null!;
+
     private List<AdditionalCost> _additionalCosts = new();
     public IEnumerable<AdditionalCost> AdditionalCosts => _additionalCosts;
     

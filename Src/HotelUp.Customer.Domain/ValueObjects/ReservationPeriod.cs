@@ -1,4 +1,6 @@
-﻿using HotelUp.Customer.Domain.ValueObjects.Exceptions;
+﻿using System.Text.Json;
+using HotelUp.Customer.Domain.ValueObjects.Exceptions;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
@@ -26,6 +28,15 @@ public record ReservationPeriod
         
         From = new DateTime(from, hotelDay.StartHour);
         To = new DateTime(to, hotelDay.EndHour);
+    }
+}
+
+public class ReservationPeriodConverter : ValueConverter<ReservationPeriod, string>
+{
+    public ReservationPeriodConverter() : base(
+        v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+        v => JsonSerializer.Deserialize<ReservationPeriod>(v, JsonSerializerOptions.Default)!)
+    {
     }
 }
 

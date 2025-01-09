@@ -1,3 +1,4 @@
+using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Domain.Repositories;
 using HotelUp.Customer.Domain.ValueObjects;
@@ -22,6 +23,7 @@ public class PostgresRoomRepository : IRoomRepository
     public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(ReservationPeriod period)
     {
         var occupiedRooms = _reservations
+            .Where(r => r.Status == ReservationStatus.Valid)
             .Where(r => !(r.Period.To < period.From || r.Period.From > period.To))
             .SelectMany(r => r.Rooms);
         return await _rooms.Except(occupiedRooms).ToListAsync();
