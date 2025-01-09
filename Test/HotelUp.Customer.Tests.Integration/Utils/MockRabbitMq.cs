@@ -11,9 +11,10 @@ public static class MockRabbitMq
     public static void AddMockRabbitMq(this IServiceCollection services, 
         RabbitMqContainer dbContainer)
     {
+        var port = dbContainer.GetMappedPublicPort(5672);
         var options = new RabbitMqOptions
         {
-            Host = dbContainer.Hostname,
+            Host = $"amqp://localhost:{port}",
             UserName = "guest",
             Password = "guest"
         };
