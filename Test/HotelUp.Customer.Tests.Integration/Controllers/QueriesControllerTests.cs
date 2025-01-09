@@ -13,14 +13,6 @@ public class QueriesControllerTests : ControllerTestsBase
     public QueriesControllerTests(TestWebAppFactory factory) : base(factory)
     {
     }
-
-    [Fact]
-    public async Task GetOne_ShouldReturnOK_WhenDatabaseExists()
-    {
-        var response = await DefaultClient.GetAsync(Prefix);
-        
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-    }
     
     [Fact]
     public async Task GetLoggedInUser_WhenTokenIsPresent_ShouldReturnOK()

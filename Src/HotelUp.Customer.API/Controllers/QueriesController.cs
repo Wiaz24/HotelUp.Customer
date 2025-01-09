@@ -14,6 +14,7 @@ namespace HotelUp.Customer.API.Controllers;
 
 [ApiController]
 [Route("api/customer/queries")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class QueriesController : ControllerBase
 {
     private readonly IQueryDispatcher _queryDispatcher;
@@ -25,7 +26,7 @@ public class QueriesController : ControllerBase
     }
     
     [HttpGet("free-rooms")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [SwaggerOperation("Returns free rooms for provided query parameters")]
     public async Task<ActionResult<IEnumerable<RoomDto>>> Get([FromQuery] GetFreeRoomsDto dto)
     {
@@ -35,8 +36,8 @@ public class QueriesController : ControllerBase
     }
     
     [Authorize]
-    [ProducesResponseType(200)]
-    [ProducesResponseType(401)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpGet("get-users-reservations")]
     [SwaggerOperation("Returns all reservations of the logged in user")]
     public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservations()
@@ -47,9 +48,9 @@ public class QueriesController : ControllerBase
     }
     
     [Authorize]
-    [ProducesResponseType(200)]
-    [ProducesResponseType(401)]
-    [ProducesResponseType(404)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("get-users-reservation/{id}")]
     [SwaggerOperation("Returns reservation by id")]
     public async Task<ActionResult<ReservationDto>> GetReservationById([FromRoute] Guid id)
@@ -64,16 +65,10 @@ public class QueriesController : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet]
-    [SwaggerIgnore]
-    public async Task<IActionResult> GetOne()
-    {
-        var result = await _queryDispatcher.DispatchAsync(new TestDatabase());
-        return Ok(result);
-    }
-    
     [Authorize]
     [HttpGet("logged-in-user")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult GetLoggedInUser()
     {
         var userName = User.FindFirstValue(ClaimTypes.Email);

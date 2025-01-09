@@ -55,9 +55,26 @@ public class CommandsControllerTests : ControllerTestsBase
         var response = await httpClient.PostAsJsonAsync($"{Prefix}/create-reservation", reservationRequest);
         _testOutputHelper.WriteLine("Reservation request sent");
         // Assert
-        // var message = await response.Content.ReadAsStringAsync();
-        // message.ShouldBe("Reservation created successfully");
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         
+    }
+
+    [Fact]
+    public async Task CreateClient_WhenTokenIsPresent_ShouldReturnCreated()
+    {
+        // Arrange
+        var clientId = Guid.NewGuid();
+        var client = Factory.CreateClient();
+        var token = MockJwtTokens.GenerateJwtToken(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, clientId.ToString())
+        });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await client.PostAsync($"{Prefix}/create-client", null);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 }

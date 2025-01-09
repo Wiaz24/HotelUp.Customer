@@ -25,13 +25,14 @@ public class ExceptionMiddleware : IMiddleware
         {
             var type = ex.GetType();
           
-            if (type.IsConcreteAndAssignableTo<AppException>())
+            if (type.IsConcreteAndAssignableTo<BusinessRuleException>())
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Response.ContentType = "application/json";
             
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
-                var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
+                var errorResponse = new ErrorResponse(errorCode, ex.Message);
+                var json = JsonSerializer.Serialize(errorResponse);
                 await context.Response.WriteAsync(json);
             }
             else if (type.IsConcreteAndAssignableTo<NotFoundException>())
@@ -40,7 +41,8 @@ public class ExceptionMiddleware : IMiddleware
                 context.Response.ContentType = "application/json";
             
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
-                var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
+                var errorResponse = new ErrorResponse(errorCode, ex.Message);
+                var json = JsonSerializer.Serialize(errorResponse);
                 await context.Response.WriteAsync(json);
             }
             else if (type.IsConcreteAndAssignableTo<DatabaseException>())
@@ -49,18 +51,14 @@ public class ExceptionMiddleware : IMiddleware
                 context.Response.ContentType = "application/json";
                 _logger.LogError(ex.Message);
                 var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
-                var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
+                var errorResponse = new ErrorResponse(errorCode, ex.Message);
+                var json = JsonSerializer.Serialize(errorResponse);
                 await context.Response.WriteAsync(json);
                 
             }
             else if (type.IsConcreteAndAssignableTo<TokenException>())
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/json";
-            
-                var errorCode = ToSnakeCase(ex.GetType().Name.Replace("Exception", ""));
-                var json = JsonSerializer.Serialize(new { error = errorCode, message = ex.Message });
-                await context.Response.WriteAsync(json);
             }
             else throw;
         }
