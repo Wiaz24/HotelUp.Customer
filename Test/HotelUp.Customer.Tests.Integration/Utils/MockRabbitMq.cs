@@ -21,7 +21,7 @@ public static class MockRabbitMq
         services.RemoveMassTransitHostedService();
         
         var massTransitServices = services
-            .Where(s => s.ServiceType.FullName.StartsWith("MassTransit"))
+            .Where(s => s.ServiceType.FullName!.StartsWith("MassTransit"))
             .ToList();
         foreach (var service in massTransitServices)
         {

@@ -35,21 +35,19 @@ public static class MockPostgres
 
             var addDbContextMethod = typeof(EntityFrameworkServiceCollectionExtensions)
                 .GetMethods()
-                .FirstOrDefault(m => m.Name == "AddDbContext" && m.IsGenericMethod);
-            
-            
-            
-            if (addDbContextMethod != null)
+                .FirstOrDefault(m => m is { Name: "AddDbContext", IsGenericMethod: true });
+
+            if (addDbContextMethod is null) continue;
+                    
+            Action<DbContextOptionsBuilder> optionsAction = options =>
             {
-                var genericAddDbContextMethod = addDbContextMethod.MakeGenericMethod(dbContextType);
-                    
-                Action<DbContextOptionsBuilder> optionsAction = options =>
-                {
-                    options.UseNpgsql(dataSource);
-                };
-                    
-                genericAddDbContextMethod.Invoke(null, new object[] { services, optionsAction, null, null });
-            }
+                options.UseNpgsql(dataSource);
+            };
+            // addDbContextMethod.Invoke(null, [services, optionsAction]);  
+            
+            var genericMethod = addDbContextMethod.MakeGenericMethod(dbContextType);
+            genericMethod.Invoke(null, [services, optionsAction, null, null]);
+            // genericAddDbContextMethod.Invoke(null, new object[] { services, optionsAction, null, null });
         }
 
         return services;

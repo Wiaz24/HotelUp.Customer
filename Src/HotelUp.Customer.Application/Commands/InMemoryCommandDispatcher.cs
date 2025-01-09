@@ -24,9 +24,9 @@ public class InMemoryCommandDispatcher : ICommandDispatcher
         using var scope = _serviceProvider.CreateScope();
         var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
         var handler = scope.ServiceProvider.GetRequiredService(handlerType);
-        var method = handlerType.GetMethod(nameof(ICommandHandler<ICommand<TResult>, TResult>.HandleAsync))
+        var method = handlerType.GetMethod(nameof(ICommandHandler<ICommand<TResult>, TResult>.HandleAsync)) 
                      ?? throw new NullReferenceException("Handler does not have HandleAsync method");
         
-        return await (Task<TResult>) method.Invoke(handler, new object[] {command})!;
+        return await (Task<TResult>) method.Invoke(handler, [command])!;
     }
 }

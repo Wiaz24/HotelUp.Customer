@@ -6,7 +6,7 @@ namespace HotelUp.Customer.Domain.ValueObjects;
 
 public record PhoneNumber
 {
-    public string Value { get; init; }
+    public string Value { get; private init; } = null!;
 
     private PhoneNumber()
     {

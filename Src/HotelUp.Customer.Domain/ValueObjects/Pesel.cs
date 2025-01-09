@@ -6,7 +6,7 @@ namespace HotelUp.Customer.Domain.ValueObjects;
 
 public record Pesel
 {
-    public string Value { get; init; }
+    public string Value { get; init; } = null!;
 
     private Pesel(){}
     

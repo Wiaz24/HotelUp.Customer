@@ -7,10 +7,10 @@ namespace HotelUp.Customer.Domain.Entities;
 
 public class Reservation : AggregateRoot<Guid>
 {
-    public Client Client { get; private set; }
+    public Client Client { get; private set; } = null!;
     public ReservationStatus Status { get; private set; }
-    public ReservationPeriod Period { get; private set; }
-    
+    public ReservationPeriod Period { get; private set; } = null!;
+
     private List<Tenant> _tenants = new();
     public IEnumerable<Tenant> Tenants => _tenants;
     
