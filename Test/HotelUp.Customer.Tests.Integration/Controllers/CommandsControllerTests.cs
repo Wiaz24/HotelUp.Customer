@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace HotelUp.Customer.Tests.Integration.Controllers;
 
-[Collection("QueriesControllerTests")]
+[Collection(nameof(CommandsControllerTests))]
 public class CommandsControllerTests : ControllerTestsBase
 {
     private readonly ITestOutputHelper _testOutputHelper;

@@ -21,7 +21,7 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
     public TestWebAppFactory()
     {
         _containers.Add(_dbContainer);
-        // _containers.Add(_rabbitMqContainer);
+        _containers.Add(_rabbitMqContainer);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -30,14 +30,15 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
         {
             services.AddMockJwtTokens();
             services.AddMockPostgres(_dbContainer);
+            services.AddMockRabbitMq(_rabbitMqContainer);
         });
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         var tasks = _containers
             .Select(c => c.StartAsync());
-        return Task.WhenAll(tasks);
+        await Task.WhenAll(tasks);
     }
 
     public new Task DisposeAsync()

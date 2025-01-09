@@ -6,7 +6,7 @@ using Shouldly;
 
 namespace HotelUp.Customer.Tests.Integration.Controllers;
 
-[Collection("QueriesControllerTests")]
+[Collection(nameof(QueriesControllerTests))]
 public class QueriesControllerTests : ControllerTestsBase
 {
     private const string Prefix = "api/customer/queries";
