@@ -45,7 +45,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                     Floor = table.Column<int>(type: "integer", nullable: false),
                     WithSpecialNeeds = table.Column<bool>(type: "boolean", nullable: false),
                     Type = table.Column<RoomType>(type: "customer.room_type", nullable: false),
-                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    ImageUrl = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
@@ -134,11 +134,11 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Pesel = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
+                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Pesel = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
                     DocumentType = table.Column<DocumentType>(type: "customer.document_type", nullable: false),
                     Status = table.Column<PresenceStatus>(type: "customer.presence_status", nullable: false)
                 },

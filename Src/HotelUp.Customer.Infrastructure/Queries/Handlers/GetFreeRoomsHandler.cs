@@ -17,10 +17,12 @@ public class GetFreeRoomsHandler : IQueryHandler<GetFreeRooms, IEnumerable<RoomD
     
     public async Task<IEnumerable<RoomDto>> HandleAsync(GetFreeRooms query)
     {
+        var startDate = DateTime.SpecifyKind(query.StartDate, DateTimeKind.Utc);
+        var endDate = DateTime.SpecifyKind(query.EndDate, DateTimeKind.Utc);
         var roomsQuery = _context.Rooms
             .Except(_context.Reservations
                 .Where(r => r.Status == ReservationStatus.Valid)
-                .Where(r => !(r.Period.To < query.StartDate || r.Period.From > query.EndDate))
+                .Where(r => !(r.Period.To < startDate || r.Period.From > endDate))
                 .SelectMany(r => r.Rooms))
             .AsQueryable();
         if (query.RoomType is not null)
