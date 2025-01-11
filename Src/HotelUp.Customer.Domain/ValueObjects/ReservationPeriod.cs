@@ -12,6 +12,8 @@ public record ReservationPeriod : IValueObject
     
     public ReservationPeriod(DateTime from, DateTime to)
     {
+        DateTime.SpecifyKind(from, DateTimeKind.Utc);
+        DateTime.SpecifyKind(to, DateTimeKind.Utc);
         if (from >= to)
         {
             throw new ReservationPeriodInvalidDatesException();
@@ -27,11 +29,11 @@ public record ReservationPeriod : IValueObject
             throw new ReservationPeriodInvalidDatesException();
         }
         
-        From = new DateTime(from, hotelDay.StartHour);
-        To = new DateTime(to, hotelDay.EndHour);
+        From = new DateTime(from, hotelDay.StartHour, DateTimeKind.Utc);
+        To = new DateTime(to, hotelDay.EndHour, DateTimeKind.Utc);
     }
 
-    public static ValueConverter GetStringValueConverter()
+    public static ValueConverter GetValueConverter()
     {
         return new ValueConverter<ReservationPeriod, string>(
             vo => JsonSerializer.Serialize(vo, JsonSerializerOptions.Default),

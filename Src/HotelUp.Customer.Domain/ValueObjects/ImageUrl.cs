@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
+using HotelUp.Customer.Domain.ValueObjects.Abstractions;
 using HotelUp.Customer.Domain.ValueObjects.Exceptions;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
-public record ImageUrl
+public record ImageUrl : IValueObject
 {
     public string Value { get; private init; } = null!;
-
     private ImageUrl(){}
     public ImageUrl(string value)
     {
@@ -28,13 +29,17 @@ public record ImageUrl
             RuleFor(x => x.Value)
                 .NotEmpty().WithMessage("URL can't be empty.")
                 .Matches(@"^https?://([\w-]+\.)+[\w-]+(/[\w\- ./?%&=]*)?$")
-                .WithMessage("URL must be valid http or https adress.")
+                .WithMessage("URL must be valid http or https address.")
                 .Matches(@"\.(png|jpg|jpeg)$")
                 .WithMessage("URL must be a valid image format (.png, .jpg, .jpeg).");
         }
     }
-
     public static implicit operator string(ImageUrl imageUrl) => imageUrl.Value;
-
     public static implicit operator ImageUrl(string value) => new(value);
+    public static ValueConverter GetValueConverter()
+    {
+        return new ValueConverter<ImageUrl, string>(
+            vo => vo.Value,
+            value => new ImageUrl(value));
+    }
 }

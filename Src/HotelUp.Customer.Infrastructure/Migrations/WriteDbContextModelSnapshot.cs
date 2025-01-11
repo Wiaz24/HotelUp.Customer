@@ -92,7 +92,8 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<RoomType>("Type")
                         .HasColumnType("customer.room_type");
@@ -139,10 +140,6 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                             b1.Property<Guid>("ReservationId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("AccomodationPrice")
-                                .IsRequired()
-                                .HasColumnType("text");
-
                             b1.Property<Guid>("Id")
                                 .HasColumnType("uuid");
 
@@ -162,10 +159,6 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                         .ValueGeneratedOnAdd()
                                         .HasColumnType("uuid");
 
-                                    b2.Property<string>("Price")
-                                        .IsRequired()
-                                        .HasColumnType("text");
-
                                     b2.HasKey("BillId", "Id");
 
                                     b2.ToTable("AdditionalCost", "customer");
@@ -173,6 +166,32 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                     b2.WithOwner()
                                         .HasForeignKey("BillId")
                                         .HasPrincipalKey("Id");
+
+                                    b2.OwnsOne("HotelUp.Customer.Domain.ValueObjects.Money", "Price", b3 =>
+                                        {
+                                            b3.Property<Guid>("AdditionalCostBillId")
+                                                .HasColumnType("uuid");
+
+                                            b3.Property<Guid>("AdditionalCostId")
+                                                .HasColumnType("uuid");
+
+                                            b3.Property<decimal>("Amount")
+                                                .HasColumnType("numeric");
+
+                                            b3.Property<string>("Currency")
+                                                .IsRequired()
+                                                .HasColumnType("text");
+
+                                            b3.HasKey("AdditionalCostBillId", "AdditionalCostId");
+
+                                            b3.ToTable("AdditionalCost", "customer");
+
+                                            b3.WithOwner()
+                                                .HasForeignKey("AdditionalCostBillId", "AdditionalCostId");
+                                        });
+
+                                    b2.Navigation("Price")
+                                        .IsRequired();
                                 });
 
                             b1.OwnsMany("HotelUp.Customer.Domain.Entities.Payment", "Payments", b2 =>
@@ -184,10 +203,6 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                         .ValueGeneratedOnAdd()
                                         .HasColumnType("uuid");
 
-                                    b2.Property<string>("Amount")
-                                        .IsRequired()
-                                        .HasColumnType("text");
-
                                     b2.Property<DateTime>("SettlementDate")
                                         .HasColumnType("timestamp with time zone");
 
@@ -198,7 +213,56 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                     b2.WithOwner()
                                         .HasForeignKey("BillId")
                                         .HasPrincipalKey("Id");
+
+                                    b2.OwnsOne("HotelUp.Customer.Domain.ValueObjects.Money", "Amount", b3 =>
+                                        {
+                                            b3.Property<Guid>("PaymentBillId")
+                                                .HasColumnType("uuid");
+
+                                            b3.Property<Guid>("PaymentId")
+                                                .HasColumnType("uuid");
+
+                                            b3.Property<decimal>("Amount")
+                                                .HasColumnType("numeric");
+
+                                            b3.Property<string>("Currency")
+                                                .IsRequired()
+                                                .HasColumnType("text");
+
+                                            b3.HasKey("PaymentBillId", "PaymentId");
+
+                                            b3.ToTable("Payment", "customer");
+
+                                            b3.WithOwner()
+                                                .HasForeignKey("PaymentBillId", "PaymentId");
+                                        });
+
+                                    b2.Navigation("Amount")
+                                        .IsRequired();
                                 });
+
+                            b1.OwnsOne("HotelUp.Customer.Domain.ValueObjects.Money", "AccomodationPrice", b2 =>
+                                {
+                                    b2.Property<Guid>("BillReservationId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<decimal>("Amount")
+                                        .HasColumnType("numeric");
+
+                                    b2.Property<string>("Currency")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.HasKey("BillReservationId");
+
+                                    b2.ToTable("Bills", "customer");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("BillReservationId");
+                                });
+
+                            b1.Navigation("AccomodationPrice")
+                                .IsRequired();
 
                             b1.Navigation("AdditionalCosts");
 
@@ -219,23 +283,28 @@ namespace HotelUp.Customer.Infrastructure.Migrations
 
                             b1.Property<string>("Email")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
 
                             b1.Property<string>("FirstName")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
 
                             b1.Property<string>("LastName")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
 
                             b1.Property<string>("Pesel")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasMaxLength(11)
+                                .HasColumnType("character varying(11)");
 
                             b1.Property<string>("PhoneNumber")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasMaxLength(15)
+                                .HasColumnType("character varying(15)");
 
                             b1.Property<PresenceStatus>("Status")
                                 .HasColumnType("customer.presence_status");

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using HotelUp.Customer.Domain.ValueObjects.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,39 +16,44 @@ internal static class Extensions
         where TValueObject : class, IValueObject
     {
         var properties = typeof(TValueObject).GetProperties();
-        if (properties.Length > 1)
+        if (properties.Length == 1)
         {
-            if (buildAction is null)
-            {
-                entityBuilder.ComplexProperty(propertyExpression);
-            }
-            else
-            {
-                entityBuilder.ComplexProperty(propertyExpression, buildAction);
-            }
-            return null;
+            return entityBuilder.Property(propertyExpression)
+                .HasConversion(TValueObject.GetValueConverter());
         }
-        entityBuilder.Property(propertyExpression)
-            .HasConversion(TValueObject.GetStringValueConverter());
-        return entityBuilder.Property(propertyExpression);
+        if (buildAction is null)
+        {
+            entityBuilder.ComplexProperty(propertyExpression);
+        }
+        else
+        {
+            entityBuilder.ComplexProperty(propertyExpression, buildAction);
+        }
+        return null;
     }
     
-    internal static PropertyBuilder<TValueObject>? HasValueObject<TOwnerEntity, TDependentEntity, TValueObject>(
+    internal static PropertyBuilder<TValueObject?>? HasValueObject<TOwnerEntity, TDependentEntity, TValueObject>(
         this OwnedNavigationBuilder<TOwnerEntity, TDependentEntity> ownedEntityBuilder,
-        Expression<Func<TDependentEntity, TValueObject>> propertyExpression)
+        Expression<Func<TDependentEntity, TValueObject?>> propertyExpression,
+        Action<OwnedNavigationBuilder<TDependentEntity, TValueObject>>? buildAction = null)
         where TOwnerEntity : class
         where TDependentEntity : class
         where TValueObject : class, IValueObject
     {
         var properties = typeof(TValueObject).GetProperties();
-        if (properties.Length > 1)
+        if (properties.Length == 1)
         {
-            ownedEntityBuilder.ToJson();
-            return null;
+            return ownedEntityBuilder.Property(propertyExpression)
+                .HasConversion(TValueObject.GetValueConverter());
         }
-        ownedEntityBuilder.Property(propertyExpression)
-            .HasConversion(TValueObject.GetStringValueConverter());
-        return ownedEntityBuilder.Property(propertyExpression);
+        if (buildAction is null)
+        {
+            ownedEntityBuilder.OwnsOne(propertyExpression);
+        }
+        else
+        {
+            ownedEntityBuilder.OwnsOne(propertyExpression, buildAction);
+        }
+        return null;
     }
-
 }

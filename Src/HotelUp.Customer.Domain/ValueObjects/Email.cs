@@ -7,9 +7,9 @@ namespace HotelUp.Customer.Domain.ValueObjects;
 
 public record Email : IValueObject
 {
-    public string Value { get; private init; } = null!;
+    private string Value { get; init; } = null!;
     private Email() { }
-    public Email(string value)
+    private Email(string value)
     {
         var email = new Email()
         {
@@ -34,10 +34,9 @@ public record Email : IValueObject
                 .EmailAddress();
         }
     }
-
     public static implicit operator string(Email email) => email.Value;
     public static implicit operator Email(string value) => new(value);
-    public static ValueConverter GetStringValueConverter()
+    public static ValueConverter GetValueConverter()
     {
         return new ValueConverter<Email, string>(
             vo => vo.Value,

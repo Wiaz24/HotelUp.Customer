@@ -1,17 +1,19 @@
 ﻿using FluentValidation;
+using HotelUp.Customer.Domain.ValueObjects.Abstractions;
 using HotelUp.Customer.Domain.ValueObjects.Exceptions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
-public record PhoneNumber
+public record PhoneNumber : IValueObject
 {
     public string Value { get; private init; } = null!;
 
     private PhoneNumber()
     {
     }
-    public PhoneNumber(string value)
+
+    private PhoneNumber(string value)
     {
         var phoneNumber = new PhoneNumber
         {
@@ -26,11 +28,8 @@ public record PhoneNumber
         }
         Value = value;
     }
-
     public static implicit operator string(PhoneNumber phoneNumber) => phoneNumber.Value;
-
     public static implicit operator PhoneNumber(string value) => new(value);
-    
     private class PhoneNumberValidator : AbstractValidator<PhoneNumber>
     {
         public PhoneNumberValidator()
@@ -40,13 +39,11 @@ public record PhoneNumber
                 .Matches(@"^(\+)?(\s*\d+\s*){9,}$");
         }
     }
-}
 
-public class PhoneNumberConverter : ValueConverter<PhoneNumber, string>
-{
-    public PhoneNumberConverter() : base(
-        v => v.Value,
-        v => new PhoneNumber(v))
+    public static ValueConverter GetValueConverter()
     {
+        return new ValueConverter<PhoneNumber, string>(
+            vo => vo.Value,
+            value => new PhoneNumber(value));
     }
 }

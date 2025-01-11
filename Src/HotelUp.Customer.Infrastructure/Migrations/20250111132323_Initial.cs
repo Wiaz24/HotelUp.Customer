@@ -83,7 +83,8 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                 columns: table => new
                 {
                     ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccomodationPrice = table.Column<string>(type: "text", nullable: false),
+                    AccomodationPrice_Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    AccomodationPrice_Currency = table.Column<string>(type: "text", nullable: false),
                     Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -160,7 +161,8 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     BillId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Price = table.Column<string>(type: "text", nullable: false)
+                    Price_Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Price_Currency = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -181,7 +183,8 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     BillId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Amount = table.Column<string>(type: "text", nullable: false),
+                    Amount_Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Amount_Currency = table.Column<string>(type: "text", nullable: false),
                     SettlementDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

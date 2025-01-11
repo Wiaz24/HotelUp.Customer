@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
+using HotelUp.Customer.Domain.ValueObjects.Abstractions;
 using HotelUp.Customer.Domain.ValueObjects.Exceptions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
-public record Pesel
+public record Pesel : IValueObject
 {
     public string Value { get; init; } = null!;
 
     private Pesel(){}
-    
-    public Pesel(string value)
+
+    private Pesel(string value)
     {
         var pesel = new Pesel()
         {
@@ -25,7 +26,6 @@ public record Pesel
         }
         Value = value;
     }
-    
     public static implicit operator string(Pesel pesel) => pesel.Value;
     public static implicit operator Pesel(string pesel) => new(pesel);
     
@@ -44,13 +44,11 @@ public record Pesel
             return long.TryParse(pesel, out _);
         }
     }
-}
 
-public class PeselConverter : ValueConverter<Pesel, string>
-{
-    public PeselConverter() : base(
-        v => v.Value,
-        v => new Pesel(v))
+    public static ValueConverter GetValueConverter()
     {
+        return new ValueConverter<Pesel, string>(
+            vo => vo.Value,
+            value => new Pesel(value));
     }
 }

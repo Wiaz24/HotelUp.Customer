@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+using HotelUp.Customer.Domain.ValueObjects.Abstractions;
 using HotelUp.Customer.Domain.ValueObjects.Exceptions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
-public record Money
+public record Money : IValueObject
 {
     public decimal Amount { get; init; }
     public string Currency { get; init; }
@@ -23,7 +25,13 @@ public record Money
     public static implicit operator Money(decimal amount) => new Money(amount);
     
     public override string ToString() => $"{Amount} {Currency}";
-    
+    public static ValueConverter GetValueConverter()
+    {
+        return new ValueConverter<Money, string>(
+            v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+            v => JsonSerializer.Deserialize<Money>(v, JsonSerializerOptions.Default)!);
+    }
+
     public static Money operator+ (Money money1, Money money2)
     {
         if (money1.Currency != money2.Currency)
@@ -31,16 +39,5 @@ public record Money
             throw new OperationOnDiffrentCurrenciesException();
         }
         return new Money(money1.Amount + money2.Amount, money1.Currency);
-    }
-}
-
-public class MoneyConverter : ValueConverter<Money, string>
-{
-    public MoneyConverter() : base(
-        v => v.ToString(),
-        v => new Money(
-            decimal.Parse(v.Split(' ', StringSplitOptions.None)[0]), 
-            v.Split(' ', StringSplitOptions.None)[1]))
-    {
     }
 }
