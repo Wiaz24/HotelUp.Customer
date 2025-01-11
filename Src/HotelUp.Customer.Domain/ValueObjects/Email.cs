@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
+using HotelUp.Customer.Domain.ValueObjects.Abstractions;
 using HotelUp.Customer.Domain.ValueObjects.Exceptions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelUp.Customer.Domain.ValueObjects;
 
-public record Email
+public record Email : IValueObject
 {
     public string Value { get; private init; } = null!;
     private Email() { }
@@ -36,13 +37,10 @@ public record Email
 
     public static implicit operator string(Email email) => email.Value;
     public static implicit operator Email(string value) => new(value);
-}
-
-public class EmailConverter : ValueConverter<Email, string>
-{
-    public EmailConverter() : base(
-        v => v.Value,
-        v => new Email(v))
+    public static ValueConverter GetStringValueConverter()
     {
+        return new ValueConverter<Email, string>(
+            vo => vo.Value,
+            value => new Email(value));
     }
 }

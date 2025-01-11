@@ -9,7 +9,7 @@
         }
     },
     "profiles": {
-        "http": {
+        "development": {
             "commandName": "Project",
             "dotnetRunMessages": true,
             "launchBrowser": true,
@@ -17,6 +17,16 @@
             "applicationUrl": "http://localhost:5000",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        "production": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "launchBrowser": false,
+            "launchUrl": "api/customer/swagger",
+            "applicationUrl": "http://localhost:5000",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Production"
             }
         }
     }

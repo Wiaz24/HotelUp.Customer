@@ -18,9 +18,7 @@ public class GetFreeRoomsHandler : IQueryHandler<GetFreeRooms, IEnumerable<RoomD
     public async Task<IEnumerable<RoomDto>> HandleAsync(GetFreeRooms query)
     {
         var roomsQuery = _context.Rooms
-            .AsNoTracking()
             .Except(_context.Reservations
-                .AsNoTracking()
                 .Where(r => r.Status == ReservationStatus.Valid)
                 .Where(r => !(r.Period.To < query.StartDate || r.Period.From > query.EndDate))
                 .SelectMany(r => r.Rooms))

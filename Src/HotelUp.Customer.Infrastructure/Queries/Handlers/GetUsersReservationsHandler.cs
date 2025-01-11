@@ -10,13 +10,6 @@ namespace HotelUp.Customer.Infrastructure.Queries.Handlers;
 public class GetUsersReservationsHandler : IQueryHandler<GetUsersReservations, IEnumerable<ReservationDto>>
 {
     private readonly ReadDbContext _context;
-    
-    // private static readonly Func<ReadDbContext, Guid, Task<List<Reservation>>> GetUsersReservationsQuery = 
-    //     Microsoft.EntityFrameworkCore.EF.CompileAsyncQuery(
-    //     (ReadDbContext context, Guid id) => context.Reservations
-    //         .AsNoTracking()
-    //         .Where(r => r.Client.Id == id)
-    //         .ToList());
 
     public GetUsersReservationsHandler(ReadDbContext context)
     {
@@ -25,11 +18,9 @@ public class GetUsersReservationsHandler : IQueryHandler<GetUsersReservations, I
 
     public async Task<IEnumerable<ReservationDto>> HandleAsync(GetUsersReservations query)
     {
-        // var reservations = await GetUsersReservationsQuery(_context, query.Id);
-        var reservations = await _context.Reservations
-            .AsNoTracking()
+        return await _context.Reservations
             .Where(r => r.Client.Id == query.Id)
+            .Select(r => new ReservationDto(r))
             .ToListAsync();
-        return reservations.Select(r => new ReservationDto(r));
     }
 }

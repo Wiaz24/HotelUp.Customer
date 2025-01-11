@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelUp.Customer.Infrastructure.EF.Contexts;
 
-public class WriteDbContext : DbContext
+public sealed class WriteDbContext : DbContext
 {
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Client> Clients { get; set; }
@@ -18,17 +18,7 @@ public class WriteDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("customer");
-        modelBuilder.HasPostgresEnum<DocumentType>();
-        modelBuilder.HasPostgresEnum<PresenceStatus>();
-        modelBuilder.HasPostgresEnum<ReservationStatus>();
-        modelBuilder.HasPostgresEnum<RoomType>();
-        
-        var configuration = new ReadWriteConfiguration();
-        modelBuilder.ApplyConfiguration<Reservation>(configuration);
-        modelBuilder.ApplyConfiguration<Client>(configuration);
-        modelBuilder.ApplyConfiguration<Room>(configuration);
-        
+        modelBuilder.AddCommonConfiguration();
         base.OnModelCreating(modelBuilder);
     }
 }

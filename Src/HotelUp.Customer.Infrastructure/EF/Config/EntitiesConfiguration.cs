@@ -1,13 +1,14 @@
 using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Domain.ValueObjects;
+using HotelUp.Customer.Infrastructure.EF.CustomExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HotelUp.Customer.Infrastructure.EF.Config;
 
-internal sealed class ReadWriteConfiguration
+internal sealed class EntitiesConfiguration
     : IEntityTypeConfiguration<Reservation>, 
         IEntityTypeConfiguration<Client>, 
         IEntityTypeConfiguration<Room>
@@ -16,7 +17,7 @@ internal sealed class ReadWriteConfiguration
     {
         builder.HasKey(x => x.Id);
         
-        builder.ToTable("Clients");
+        builder.ToTable($"{nameof(Client)}s");
     }
     public void Configure(EntityTypeBuilder<Room> builder)
     {
@@ -46,7 +47,7 @@ internal sealed class ReadWriteConfiguration
                 url => url.Value,
                 url => new ImageUrl(url));
         
-        builder.ToTable("Rooms");
+        builder.ToTable($"{nameof(Room)}s");
     }
     public void Configure(EntityTypeBuilder<Reservation> builder)
     {
@@ -55,6 +56,8 @@ internal sealed class ReadWriteConfiguration
             .IsRowVersion();
         
         builder.Property(x => x.Status);
+        
+        builder.HasValueObject(x => x.Period);
         
         builder.ComplexProperty(x => x.Period, cp =>
         {
@@ -104,7 +107,7 @@ internal sealed class ReadWriteConfiguration
                     .HasConversion<MoneyConverter>();
             });
             
-            b.ToTable("Bills");
+            b.ToTable($"{nameof(Bill)}s");
         });
         
         builder.OwnsMany(x => x.Tenants, tb =>
@@ -121,8 +124,7 @@ internal sealed class ReadWriteConfiguration
             tb.Property(x => x.PhoneNumber)
                 .HasConversion<PhoneNumberConverter>();
 
-            tb.Property(x => x.Email)
-                .HasConversion<EmailConverter>();
+            tb.HasValueObject(x => x.Email);
 
             tb.Property(x => x.Pesel)
                 .HasConversion<PeselConverter>();
@@ -130,9 +132,9 @@ internal sealed class ReadWriteConfiguration
             tb.Property(x => x.DocumentType);
             tb.Property(x => x.Status);
             
-            tb.ToTable("Tenants");
+            tb.ToTable($"{nameof(Tenant)}s");
         });
         
-        builder.ToTable("Reservations");
+        builder.ToTable($"{nameof(Reservation)}s");
     }
 }

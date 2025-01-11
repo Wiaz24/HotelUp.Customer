@@ -71,7 +71,7 @@ public class QueriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult GetLoggedInUser()
     {
-        var userName = User.FindFirstValue(ClaimTypes.Email);
-        return Ok($"Hello {userName}!");
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        return Ok($"Hello {email}!");
     }
 }

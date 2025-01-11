@@ -14,17 +14,12 @@ internal static class Extensions
         var assembly = Assembly.GetCallingAssembly();
         
         services.AddSingleton<IQueryDispatcher, InMemoryQueryDispatcher>();
-        services.Scan(s => s.FromAssemblies(assembly)
-            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<>)))
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
        
         services.Scan(s => s.FromAssemblies(assembly)
             .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-        
-        services.TryDecorate(typeof(IQueryHandler<>), typeof(LoggingQueryHandlerDecorator<>));
+
         services.TryDecorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandlerDecorator<,>));
         return services;
     } 

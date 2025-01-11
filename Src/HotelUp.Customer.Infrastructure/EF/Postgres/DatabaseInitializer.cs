@@ -1,12 +1,9 @@
-﻿using System.Reflection;
-using HotelUp.Customer.Infrastructure.EF.Contexts;
+﻿using HotelUp.Customer.Infrastructure.EF.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-// ReSharper disable All
-
 namespace HotelUp.Customer.Infrastructure.EF.Postgres;
 
 public class DatabaseInitializer : IHostedService
@@ -30,8 +27,6 @@ public class DatabaseInitializer : IHostedService
         if (shouldMigrate is false)
             return;
         
-        // var dbContextTypes = Assembly.GetCallingAssembly().GetTypes()
-        //     .Where(x => typeof(DbContext).IsAssignableFrom(x) && !x.IsInterface && x != typeof(DbContext));
         var dbContextTypes = new List<Type>
         {
             typeof(ReadDbContext),

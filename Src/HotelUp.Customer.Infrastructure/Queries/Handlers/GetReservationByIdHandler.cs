@@ -18,7 +18,6 @@ public class GetReservationByIdHandler : IQueryHandler<GetReservationById, Reser
     public async Task<ReservationDto?> HandleAsync(GetReservationById query)
     {
         var reservation = await _context.Reservations
-            .AsNoTracking()
             .SingleOrDefaultAsync(r => r.Client.Id == query.ClientId && r.Id == query.Id);
         return reservation is null ? null : new ReservationDto(reservation);
     }
