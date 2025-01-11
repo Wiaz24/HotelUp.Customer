@@ -29,12 +29,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\..\docker-compose.yaml">
-            <Link>docker-compose.yaml</Link>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <InternalsVisibleTo Include="HotelUp.Customer.Tests.Integration" />
     </ItemGroup>
 

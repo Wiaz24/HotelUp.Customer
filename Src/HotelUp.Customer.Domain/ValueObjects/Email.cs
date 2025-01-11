@@ -7,9 +7,9 @@ namespace HotelUp.Customer.Domain.ValueObjects;
 
 public record Email : IValueObject
 {
-    private string Value { get; init; } = null!;
+    public string Value { get; init; } = null!;
     private Email() { }
-    private Email(string value)
+    public Email(string value)
     {
         var email = new Email()
         {
