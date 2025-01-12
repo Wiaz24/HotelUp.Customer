@@ -15,7 +15,11 @@ public class QuartzTenantCleanerService : ITenantCleanerService
 
     public async Task EnqueueForAnonymizationAsync(Guid reservationId, DateTimeOffset anonymizationDate)
     {
-        var scheduler = await _schedulerFactory.GetScheduler();
+        var scheduler = await _schedulerFactory.GetScheduler("CustomerScheduler");
+        if (scheduler is null)
+        {
+            throw new NullReferenceException("Scheduler with name 'CustomerScheduler' not found");
+        }
         var dataMap = new JobDataMap
         {
             { "ReservationId", reservationId.ToString() }

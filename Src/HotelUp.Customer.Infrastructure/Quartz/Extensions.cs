@@ -18,6 +18,7 @@ public static class Extensions
         
         services.AddQuartz(q =>
         {
+            q.SchedulerName = "CustomerScheduler";
             q.UsePersistentStore(x =>
             {
                 x.UseProperties = true;

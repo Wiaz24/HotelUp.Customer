@@ -26,12 +26,17 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("Postgres:ConnectionString", _dbContainer.GetConnectionString());
+        
+        var port = _rabbitMqContainer.GetMappedPublicPort(5672);
+        builder.UseSetting("MessageBroker:RabbitMQ:Host", $"amqp://localhost:{port}");
+        
+        builder.UseEnvironment("Testing");
         builder.ConfigureTestServices(services =>
         {
             services.AddMockJwtTokens();
-            services.AddMockPostgres(_dbContainer);
-            services.AddMockRabbitMq(_rabbitMqContainer);
         });
+        base.ConfigureWebHost(builder);
     }
 
     public async Task InitializeAsync()

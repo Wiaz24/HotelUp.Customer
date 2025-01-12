@@ -9,15 +9,15 @@ public static class RoomGenerator
 {
     private const string ExampleImageUrl = "https://www.images.com/img.png";
     
-    public static async Task<IEnumerable<Room>> GenerateSampleRooms(int count, int capacity = 1)
+    public static async Task<IEnumerable<Room>> GenerateSampleRooms(int count, int capacity = 1, int startNumber = 1)
     {
         var roomRepository = new InMemoryRoomRepository();
         var roomFactory = new RoomFactory(roomRepository);
 
         var rooms = new List<Room>();
-        for (int i = 1; i <= count; i++)
+        for (int i = 0; i < count; i++)
         {
-            var room = await roomFactory.Create(i, capacity, 1, 
+            var room = await roomFactory.Create(i + startNumber, capacity, 1, 
                 false, RoomType.Basic, ExampleImageUrl);
             rooms.Add(room);
         }
