@@ -19,8 +19,6 @@ public class PostgresReservationRepository : IReservationRepository
     public Task<Reservation?> GetAsync(Guid id)
     {
         return _reservations
-            .Include(r => r.Client)
-            .Include(r => r.Rooms)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 

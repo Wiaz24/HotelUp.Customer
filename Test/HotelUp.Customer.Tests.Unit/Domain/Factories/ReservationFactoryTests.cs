@@ -4,9 +4,16 @@ using HotelUp.Customer.Domain.Factories.Abstractions;
 using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
 using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
+using HotelUp.Customer.Domain.Services;
 using HotelUp.Customer.Domain.ValueObjects;
+using HotelUp.Customer.Infrastructure.Services;
 using HotelUp.Customer.Tests.Shared.Utils;
 using HotelUp.Customer.Tests.Shared.Utils.Domain.Repositories;
+
+using NSubstitute;
+
+using Quartz;
+
 using Shouldly;
 
 namespace HotelUp.Customer.Unit.Domain.Factories;
@@ -15,11 +22,18 @@ public class ReservationFactoryTests
 {
     private readonly IEnumerable<IRoomPricePolicy> _roomPricePolicies;
     private readonly ITenantPricePolicy _tenantPricePolicy;
-    private readonly IHotelDayFactory _hotelDayFactory;
+    private readonly HotelDayFactory _hotelDayFactory;
     private readonly HotelDay _hotelDay;
-    
+    private readonly ITenantCleanerService _tenantCleanerService;
+    private readonly IScheduler _scheduler;
+
     public ReservationFactoryTests()
     {
+        _scheduler = Substitute.For<IScheduler>();
+        ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
+        schedulerFactory.GetScheduler().Returns(_scheduler);
+        _tenantCleanerService = new QuartzTenantCleanerService(schedulerFactory);
+        
         _roomPricePolicies = PoliciesGenerator.GenerateRoomPricePolicies();
         _tenantPricePolicy = PoliciesGenerator.GenerateTenantPricePolicy();
         _hotelDayFactory = HotelDayGenerator.GenerateHotelDayFactory(14,10);
@@ -33,7 +47,7 @@ public class ReservationFactoryTests
         var roomRepository = new InMemoryRoomRepository();
         var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies, 
-            _tenantPricePolicy, roomRepository, _hotelDayFactory);
+            _tenantPricePolicy, roomRepository, _hotelDayFactory, _tenantCleanerService);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
@@ -55,6 +69,7 @@ public class ReservationFactoryTests
         reservation.Period.To.ShouldBe(new DateTime(endDate, _hotelDay.EndHour));
         reservation.Rooms.Count().ShouldBe(1);
         reservation.Tenants.Count().ShouldBe(1);
+        await _scheduler.Received(1).ScheduleJob(Arg.Any<IJobDetail>(), Arg.Any<ITrigger>());
     }
 
     [Fact]
@@ -64,7 +79,7 @@ public class ReservationFactoryTests
         var roomRepository = new InMemoryRoomRepository();
         var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
-            _tenantPricePolicy, roomRepository, _hotelDayFactory);
+            _tenantPricePolicy, roomRepository, _hotelDayFactory, _tenantCleanerService);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
@@ -93,7 +108,7 @@ public class ReservationFactoryTests
         var roomRepository = new InMemoryRoomRepository();
         var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
-            _tenantPricePolicy, roomRepository, _hotelDayFactory);
+            _tenantPricePolicy, roomRepository, _hotelDayFactory, _tenantCleanerService);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
@@ -122,7 +137,7 @@ public class ReservationFactoryTests
         var roomRepository = new InMemoryRoomRepository();
         var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
-            _tenantPricePolicy, roomRepository, _hotelDayFactory);
+            _tenantPricePolicy, roomRepository, _hotelDayFactory, _tenantCleanerService);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
@@ -149,7 +164,7 @@ public class ReservationFactoryTests
         var roomRepository = new InMemoryRoomRepository();
         var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
-            _tenantPricePolicy, roomRepository, _hotelDayFactory);
+            _tenantPricePolicy, roomRepository, _hotelDayFactory, _tenantCleanerService);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         clientRepository.Clients.Add(client.Id, client);
@@ -177,7 +192,7 @@ public class ReservationFactoryTests
         var roomRepository = new InMemoryRoomRepository();
         var clientRepository = new InMemoryClientRepository();
         var reservationFactory = new ReservationFactory(_roomPricePolicies,
-            _tenantPricePolicy, roomRepository, _hotelDayFactory);
+            _tenantPricePolicy, roomRepository, _hotelDayFactory, _tenantCleanerService);
         var clientFactory = new ClientFactory(clientRepository);
         var client = await clientFactory.Create(Guid.NewGuid());
         
