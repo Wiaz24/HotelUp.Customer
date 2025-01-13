@@ -8,6 +8,7 @@ using HotelUp.Customer.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.AddShared();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

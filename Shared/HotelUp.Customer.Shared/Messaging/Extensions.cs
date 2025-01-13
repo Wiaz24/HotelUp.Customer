@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Text.Json.Serialization;
+
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -18,6 +20,11 @@ internal static class Extensions
             busConfigurator.AddConsumers(assembliesWithConsumers);
             busConfigurator.UsingRabbitMq((context, rabbitMqConfigurator) =>
             {
+                rabbitMqConfigurator.ConfigureJsonSerializerOptions(serializerOptions =>
+                {
+                    serializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    return serializerOptions;
+                });
                 var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
                 rabbitMqConfigurator.Host(options.Host, hostConfigurator =>
                 {
