@@ -5,6 +5,7 @@ using HotelUp.Customer.Domain.Factories.Exceptions;
 using HotelUp.Customer.Domain.Policies.RoomPricePolicy;
 using HotelUp.Customer.Domain.Policies.TenantPricePolicy;
 using HotelUp.Customer.Domain.Repositories;
+using HotelUp.Customer.Domain.Services;
 using HotelUp.Customer.Domain.ValueObjects;
 
 namespace HotelUp.Customer.Domain.Factories;
@@ -15,13 +16,16 @@ public sealed class ReservationFactory : IReservationFactory
     private readonly ITenantPricePolicy _tenantPricePolicy;
     private readonly IRoomRepository _roomRepository;
     private readonly IHotelDayFactory _hotelDayFactory;
+    private readonly ITenantCleanerService _tenantCleanerService;
     public ReservationFactory(IEnumerable<IRoomPricePolicy> roomPricePolicies, 
-        ITenantPricePolicy tenantPricePolicy, IRoomRepository roomRepository, IHotelDayFactory hotelDayFactory)
+        ITenantPricePolicy tenantPricePolicy, IRoomRepository roomRepository, 
+        IHotelDayFactory hotelDayFactory, ITenantCleanerService tenantCleanerService)
     {
         _roomPricePolicies = roomPricePolicies;
         _tenantPricePolicy = tenantPricePolicy;
         _roomRepository = roomRepository;
         _hotelDayFactory = hotelDayFactory;
+        _tenantCleanerService = tenantCleanerService;
     }
     public async Task<Reservation> Create(Client client, List<int> roomNumbers, 
         List<TenantData> tenantsData, DateOnly startDate, DateOnly endDate)
@@ -78,6 +82,9 @@ public sealed class ReservationFactory : IReservationFactory
         
         var tenants = tenantsData.Select(tenantData => new Tenant(tenantData));
         var reservation = new Reservation(client, period, tenants, rooms, bill);
+        await _tenantCleanerService.EnqueueForAnonymizationAsync(reservation.Id, 
+            DateOnly.FromDateTime(reservation.Period.To).AddDays(30));
+        
         return reservation;
     }
 }

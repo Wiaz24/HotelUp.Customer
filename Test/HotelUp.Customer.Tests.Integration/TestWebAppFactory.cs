@@ -4,6 +4,9 @@ using HotelUp.Customer.Tests.Integration.Utils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 
@@ -17,6 +20,7 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
         TestDatabaseFactory.Create();
     private readonly RabbitMqContainer _rabbitMqContainer =
         RabbitMqContainerFactory.Create();
+    public readonly TimeProvider TimeProvider = TimeProvider.System;
 
     public TestWebAppFactory()
     {
@@ -26,12 +30,19 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("Postgres:ConnectionString", _dbContainer.GetConnectionString());
+        
+        var port = _rabbitMqContainer.GetMappedPublicPort(5672);
+        builder.UseSetting("MessageBroker:RabbitMQ:Host", $"amqp://localhost:{port}");
+        
+        builder.UseEnvironment("Testing");
         builder.ConfigureTestServices(services =>
         {
             services.AddMockJwtTokens();
-            services.AddMockPostgres(_dbContainer);
-            services.AddMockRabbitMq(_rabbitMqContainer);
+            services.RemoveAll(typeof(TimeProvider));
+            services.AddSingleton<TimeProvider>(TimeProvider);
         });
+        base.ConfigureWebHost(builder);
     }
 
     public async Task InitializeAsync()

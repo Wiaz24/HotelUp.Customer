@@ -5,6 +5,7 @@ using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Infrastructure.EF.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HotelUp.Customer.Infrastructure.Migrations
 {
     [DbContext(typeof(WriteDbContext))]
-    partial class WriteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250111204903_AddQuartz")]
+    partial class AddQuartz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -633,7 +636,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("HotelUp.Customer.Domain.Entities.Reservation.Bill#HotelUp.Customer.Domain.Entities.Bill", "Bill", b1 =>
+                    b.OwnsOne("HotelUp.Customer.Domain.Entities.Bill", "Bill", b1 =>
                         {
                             b1.Property<Guid>("ReservationId")
                                 .HasColumnType("uuid");
@@ -648,7 +651,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ReservationId");
 
-                            b1.OwnsMany("HotelUp.Customer.Domain.Entities.Reservation.Bill#HotelUp.Customer.Domain.Entities.Bill.AdditionalCosts#HotelUp.Customer.Domain.Entities.AdditionalCost", "AdditionalCosts", b2 =>
+                            b1.OwnsMany("HotelUp.Customer.Domain.Entities.AdditionalCost", "AdditionalCosts", b2 =>
                                 {
                                     b2.Property<Guid>("BillId")
                                         .HasColumnType("uuid");
@@ -665,7 +668,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                         .HasForeignKey("BillId")
                                         .HasPrincipalKey("Id");
 
-                                    b2.OwnsOne("HotelUp.Customer.Domain.Entities.Reservation.Bill#HotelUp.Customer.Domain.Entities.Bill.AdditionalCosts#HotelUp.Customer.Domain.Entities.AdditionalCost.Price#HotelUp.Customer.Domain.ValueObjects.Money", "Price", b3 =>
+                                    b2.OwnsOne("HotelUp.Customer.Domain.ValueObjects.Money", "Price", b3 =>
                                         {
                                             b3.Property<Guid>("AdditionalCostBillId")
                                                 .HasColumnType("uuid");
@@ -692,7 +695,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                         .IsRequired();
                                 });
 
-                            b1.OwnsMany("HotelUp.Customer.Domain.Entities.Reservation.Bill#HotelUp.Customer.Domain.Entities.Bill.Payments#HotelUp.Customer.Domain.Entities.Payment", "Payments", b2 =>
+                            b1.OwnsMany("HotelUp.Customer.Domain.Entities.Payment", "Payments", b2 =>
                                 {
                                     b2.Property<Guid>("BillId")
                                         .HasColumnType("uuid");
@@ -712,7 +715,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                         .HasForeignKey("BillId")
                                         .HasPrincipalKey("Id");
 
-                                    b2.OwnsOne("HotelUp.Customer.Domain.Entities.Reservation.Bill#HotelUp.Customer.Domain.Entities.Bill.Payments#HotelUp.Customer.Domain.Entities.Payment.Amount#HotelUp.Customer.Domain.ValueObjects.Money", "Amount", b3 =>
+                                    b2.OwnsOne("HotelUp.Customer.Domain.ValueObjects.Money", "Amount", b3 =>
                                         {
                                             b3.Property<Guid>("PaymentBillId")
                                                 .HasColumnType("uuid");
@@ -739,7 +742,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                                         .IsRequired();
                                 });
 
-                            b1.OwnsOne("HotelUp.Customer.Domain.Entities.Reservation.Bill#HotelUp.Customer.Domain.Entities.Bill.AccomodationPrice#HotelUp.Customer.Domain.ValueObjects.Money", "AccomodationPrice", b2 =>
+                            b1.OwnsOne("HotelUp.Customer.Domain.ValueObjects.Money", "AccomodationPrice", b2 =>
                                 {
                                     b2.Property<Guid>("BillReservationId")
                                         .HasColumnType("uuid");
@@ -767,7 +770,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                             b1.Navigation("Payments");
                         });
 
-                    b.OwnsMany("HotelUp.Customer.Domain.Entities.Reservation.Tenants#HotelUp.Customer.Domain.Entities.Tenant", "Tenants", b1 =>
+                    b.OwnsMany("HotelUp.Customer.Domain.Entities.Tenant", "Tenants", b1 =>
                         {
                             b1.Property<Guid>("ReservationId")
                                 .HasColumnType("uuid");

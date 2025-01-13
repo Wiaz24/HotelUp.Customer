@@ -25,7 +25,7 @@ public class QueriesController : ControllerBase
         _queryDispatcher = queryDispatcher;
     }
     
-    [HttpGet("free-rooms")]
+    [HttpGet("get-free-rooms")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [SwaggerOperation("Returns free rooms for provided query parameters")]
     public async Task<ActionResult<IEnumerable<RoomDto>>> Get([FromQuery] GetFreeRoomsDto dto)

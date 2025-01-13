@@ -6,14 +6,14 @@ public static class Extensions
     private const string SectionName = "AllowedOrigins";
     public static IServiceCollection AddCorsForFrontend(this IServiceCollection services, IConfiguration configuration)
     {
-        var allowedHosts = configuration.GetSection(SectionName).Get<string[]>()
+        var allowedOrigins = configuration.GetSection(SectionName).Get<string[]>()
             ?? throw new NullReferenceException($"{SectionName} not found in config file");
         
         services.AddCors(options =>
         {
             options.AddPolicy(FrontendPolicy,
                 policy => policy
-                    .WithOrigins(allowedHosts)
+                    .WithOrigins(allowedOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());

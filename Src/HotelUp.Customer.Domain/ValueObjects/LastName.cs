@@ -8,7 +8,7 @@ public record LastName : IValueObject
 {
     public string Value { get; private init; }
 
-    private LastName(string value)
+    public LastName(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {

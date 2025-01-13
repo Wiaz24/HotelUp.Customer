@@ -44,6 +44,14 @@ public class Reservation : AggregateRoot<Guid>
         Bill = null;
     }
     
+    public void AnonymizeTenantsData()
+    {
+        foreach (var tenant in _tenants)
+        {
+            tenant.Anonymize();
+        }
+    }
+    
     private Reservation()
     {
     }

@@ -1,7 +1,10 @@
 ﻿using HotelUp.Customer.Infrastructure.EF;
 using HotelUp.Customer.Infrastructure.EF.Health;
+using HotelUp.Customer.Infrastructure.Quartz;
 using HotelUp.Customer.Infrastructure.Queries;
 using HotelUp.Customer.Infrastructure.Repositories;
+using HotelUp.Customer.Infrastructure.Services;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,8 +16,10 @@ public static class Extensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDatabase(configuration);
+        services.AddQuartz(configuration);
         services.AddQueryHandlers();
         services.AddRepositories();
+        services.AddServices();
         return services;
     }
     
