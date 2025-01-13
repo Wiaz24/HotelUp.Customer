@@ -32,7 +32,7 @@ public class ReservationFactoryTests
         _scheduler = Substitute.For<IScheduler>();
         ISchedulerFactory schedulerFactory = Substitute.For<ISchedulerFactory>();
         schedulerFactory.GetScheduler("CustomerScheduler").Returns(_scheduler);
-        _tenantCleanerService = new QuartzTenantCleanerService(schedulerFactory);
+        _tenantCleanerService = new QuartzTenantCleanerService(schedulerFactory, TimeProvider.System);
         
         _roomPricePolicies = PoliciesGenerator.GenerateRoomPricePolicies();
         _tenantPricePolicy = PoliciesGenerator.GenerateTenantPricePolicy();

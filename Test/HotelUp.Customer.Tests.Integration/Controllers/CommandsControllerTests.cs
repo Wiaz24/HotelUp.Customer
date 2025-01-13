@@ -8,8 +8,12 @@ using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Infrastructure.EF.Contexts;
 using HotelUp.Customer.Tests.Integration.Utils;
 using HotelUp.Customer.Tests.Shared.Utils;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using NSubstitute;
 
 using Quartz;
 using Quartz.Impl.Matchers;
@@ -20,7 +24,7 @@ using Xunit.Abstractions;
 namespace HotelUp.Customer.Tests.Integration.Controllers;
 
 [Collection(nameof(CommandsControllerTests))]
-public class CommandsControllerTests : ControllerTestsBase
+public class CommandsControllerTests : IntegrationTestsBase
 {
     private readonly ITestOutputHelper _testOutputHelper;
     private const string Prefix = "api/customer/commands";
@@ -92,58 +96,42 @@ public class CommandsControllerTests : ControllerTestsBase
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
-    
-    private async Task WaitForJobToBeScheduled(IScheduler scheduler, int expectedJobCount, int timeoutInSeconds = 5)
-    {
-        var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
-        var stopwatch = Stopwatch.StartNew();
-
-        while (stopwatch.Elapsed < timeout)
-        {
-            var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-            if (jobKeys.Count == expectedJobCount)
-            {
-                return;
-            }
-            await Task.Delay(100);
-        }
-
-        throw new TimeoutException($"Nie udało się znaleźć {expectedJobCount} zaplanowanych zadań w ciągu {timeoutInSeconds} sekund.");
-    }
 
     [Fact]
     public async Task CreateReservation_ShouldEnqueueAndExecuteAnonymizationJob()
     {
         // Arrange
-        _testOutputHelper.WriteLine($"started test {nameof(CreateReservation_ShouldEnqueueAndExecuteAnonymizationJob)}");
         var scheduler = await _schedulerFactory.GetScheduler("CustomerScheduler");
-        
-        _testOutputHelper.WriteLine($"scheduler obtained");
         scheduler.ShouldNotBeNull();
-        // await scheduler.Clear();
+        await scheduler.Clear();
         
         var client = await CreateSampleClient();
-        await CreateSampleRooms(3, 2);
+        var rooms = await CreateSampleRooms(3, 2);
         var httpClient = CreateHttpClientWithToken(client.Id);
         
         _testOutputHelper.WriteLine($"sample data created");
         var reservationRequest = new CreateReservationDto()
         {
-            RoomNumbers = [1],
+            RoomNumbers = rooms.Select(r => r.Number).ToArray(),
             TenantsData = TenantDataGenerator.GenerateSampleTenantsDataDtos(2).ToArray(),
-            StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
-            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-35)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30))
         };
         
         // Act
-        _testOutputHelper.WriteLine($"sending request");
-        var response = await httpClient.PostAsJsonAsync($"{Prefix}/create-client", reservationRequest);
-        _testOutputHelper.WriteLine($"request sent. response status code: {response.StatusCode}");
+        var response = await httpClient.PostAsJsonAsync($"{Prefix}/create-reservation", reservationRequest);
         var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-        _testOutputHelper.WriteLine($"job keys count: {jobKeys.Count}");
+        
         // Assert
-        // await WaitForJobToBeScheduled(scheduler, 1, 30);
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        using (var scope = _serviceProvider.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+            var reservation = await dbContext.Reservations.FirstOrDefaultAsync(x => x.Client.Id == client.Id);
+            reservation.ShouldNotBeNull();
+        }
+        jobKeys.Count.ShouldBe(1);
     }
 
     [Fact]

@@ -83,7 +83,7 @@ public sealed class ReservationFactory : IReservationFactory
         var tenants = tenantsData.Select(tenantData => new Tenant(tenantData));
         var reservation = new Reservation(client, period, tenants, rooms, bill);
         await _tenantCleanerService.EnqueueForAnonymizationAsync(reservation.Id, 
-            reservation.Period.To + TimeSpan.FromDays(30));
+            DateOnly.FromDateTime(reservation.Period.To).AddDays(30));
         
         return reservation;
     }

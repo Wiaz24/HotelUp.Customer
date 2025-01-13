@@ -2,5 +2,5 @@
 
 public interface ITenantCleanerService
 {
-    public Task EnqueueForAnonymizationAsync(Guid reservationId, DateTimeOffset anonymizationDate);
+    public Task EnqueueForAnonymizationAsync(Guid reservationId, DateOnly anonymizationDate);
 }
