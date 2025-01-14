@@ -34,7 +34,7 @@ public class CreateReservationHandler : ICommandHandler<CreateReservation, Guid>
         var reservation = await _reservationFactory.Create(client, command.RoomNumbers.ToList(), 
             command.TenantsData.ToList(), command.StartDate, command.EndDate);
         await _reservationRepository.AddAsync(reservation);
-        await _bus.Publish<ReservationCreatedEvent>(new ReservationDto(reservation));
+        await _bus.Publish(new ReservationCreatedEvent(new ReservationDto(reservation)));
         return reservation.Id;
     }
 }

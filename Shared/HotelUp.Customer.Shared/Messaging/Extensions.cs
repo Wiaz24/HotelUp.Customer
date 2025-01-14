@@ -20,6 +20,9 @@ internal static class Extensions
             busConfigurator.AddConsumers(assembliesWithConsumers);
             busConfigurator.UsingRabbitMq((context, rabbitMqConfigurator) =>
             {
+                // Configure default entity name formatter
+                rabbitMqConfigurator.MessageTopology.SetEntityNameFormatter(new CustomNameFormatter());
+
                 rabbitMqConfigurator.ConfigureJsonSerializerOptions(serializerOptions =>
                 {
                     serializerOptions.Converters.Add(new JsonStringEnumConverter());
