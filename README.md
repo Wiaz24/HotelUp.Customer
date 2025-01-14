@@ -1,6 +1,7 @@
 # HotelUp - Customer service
-![dockerhub_badge](https://github.com/Wiaz24/HotelUp.Customer/actions/workflows/dockerhub.yml/badge.svg)
-![tests_badge](https://github.com/Wiaz24/HotelUp.Customer/actions/workflows/tests.yml/badge.svg)
+![Application tests](https://github.com/Wiaz24/HotelUp.Customer/actions/workflows/tests.yml/badge.svg)
+![Github issues](https://img.shields.io/github/issues/Wiaz24/HotelUp.Customer)
+[![Docker Image Size](https://badgen.net/docker/size/wiaz/hotelup.customer?icon=docker&label=image%20size)](https://hub.docker.com/r/wiaz/hotelup.customer/)
 
 This service should expose endpoints on port `5000` starting with:
 ```http
@@ -62,5 +63,19 @@ This service creates the following exchanges:
     ```json
     {
       "reservationId":"3ef70b03-2fa4-4a94-b5d8-91c0d0077147"
+    }
+    ```
+  
+- `HotelUp.Customer:RoomCreatedEvent` - to notify about new rooms. The message provides the following example payload structure:
+    ```json
+    {
+      "roomDto":{
+        "id":2,
+        "capacity":2,
+        "floor":0,
+        "withSpecialNeeds":false,
+        "type":"Basic",
+        "imageUrl":"https://www.example.com/image.jpg"
+      }
     }
     ```
