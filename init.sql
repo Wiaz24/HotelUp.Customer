@@ -27,4 +27,4 @@ END $$;
 
 -- Revoke all privileges on public schema
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-ALTER SYSTEM SET track_commit_timestamp to "on"
+-- ALTER SYSTEM SET track_commit_timestamp to "on"
