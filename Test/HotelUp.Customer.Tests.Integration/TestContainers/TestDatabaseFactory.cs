@@ -1,4 +1,6 @@
 ﻿using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Volumes;
+
 using Testcontainers.PostgreSql;
 
 namespace HotelUp.Customer.Tests.Integration.TestContainers;
@@ -18,6 +20,7 @@ internal static class TestDatabaseFactory
             .WithPortBinding(port, DefaultPort)
             .WithUsername("Postgres")
             .WithPassword("Postgres")
+            .WithCommand("-c", "track_commit_timestamp=true")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(DefaultPort))
             .Build();
     }

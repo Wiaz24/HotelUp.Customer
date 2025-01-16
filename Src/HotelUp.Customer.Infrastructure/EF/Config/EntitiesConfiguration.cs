@@ -14,6 +14,7 @@ internal sealed class EntitiesConfiguration
     {
         builder.HasKey(x => x.Id);
         
+        
         builder.ToTable($"{nameof(Client)}s");
     }
     public void Configure(EntityTypeBuilder<Room> builder)
