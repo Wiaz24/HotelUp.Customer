@@ -27,5 +27,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Unit tests
+      run: dotnet test Test/HotelUp.Customer.Tests.Unit --no-build --verbosity normal
+    - name: Integration tests
+      run: dotnet test Test/HotelUp.Customer.Tests.Integration --no-build --verbosity normal

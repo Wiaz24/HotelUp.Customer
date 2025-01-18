@@ -29,6 +29,9 @@ app.UseShared();
 app.UseCustomSwagger();
 app.UseCorsForFrontend();
 app.MapControllers();
+app.MapGet("/", () => Results.Redirect("/api/customer/swagger/index.html"))
+    .Produces(200)
+    .ExcludeFromDescription();
 app.Run();
 
 public interface IApiMarker
