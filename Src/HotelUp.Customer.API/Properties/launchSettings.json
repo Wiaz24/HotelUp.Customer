@@ -19,6 +19,16 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
+        "docker": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "launchBrowser": true,
+            "launchUrl": "api/customer/swagger",
+            "applicationUrl": "http://localhost:5000",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Docker"
+            }
+        },
         "production": {
             "commandName": "Project",
             "dotnetRunMessages": true,
