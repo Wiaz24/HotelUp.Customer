@@ -1,7 +1,23 @@
 version: '3.8'
 
 services:
-    
+    app:
+#        build:
+#            context: .
+#            dockerfile: Dockerfile
+        image: wiaz/hotelup.customer:latest
+        environment:
+            ASPNETCORE_ENVIRONMENT: Docker
+        ports:
+          - "5000:8080"
+        volumes:
+          - C:/Users/wiazh/.aws/credentials:/home/app/.aws/credentials
+        networks:
+            - hotelup
+        depends_on:
+            - postgres
+            - rabbitmq
+          
     postgres:
         image: postgres:latest
         environment:
@@ -15,6 +31,9 @@ services:
           - "track_commit_timestamp=true"
         volumes:
           - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - hotelup
+            
     rabbitmq:
         image: rabbitmq:management
         environment:
@@ -23,6 +42,9 @@ services:
         ports:
             - "5672:5672"
             - "15672:15672"
+        networks:
+          - hotelup
+        
     seq:
         image: datalust/seq
         environment:
@@ -30,6 +52,9 @@ services:
         ports:
             - "5341:5341"
             - "80:80"
+        networks:
+          - hotelup
+        
     keycloak:
         image: quay.io/keycloak/keycloak:latest
         environment:
@@ -40,3 +65,9 @@ services:
         volumes:
             - ./Keycloak/import:/opt/keycloak/data/import
         command: start-dev --import-realm
+        networks:
+          - hotelup
+    
+networks:
+    hotelup:
+        driver: bridge
