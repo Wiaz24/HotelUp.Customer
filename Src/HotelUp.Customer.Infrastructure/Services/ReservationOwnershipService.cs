@@ -1,8 +1,9 @@
 using HotelUp.Customer.Application.ApplicationServices;
 using HotelUp.Customer.Infrastructure.EF.Contexts;
+
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelUp.Customer.Infrastructure.Repositories;
+namespace HotelUp.Customer.Infrastructure.Services;
 
 public class ReservationOwnershipService : IReservationOwnershipService
 {

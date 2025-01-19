@@ -23,11 +23,5 @@ public record CreateRoomDto
     [DefaultValue(RoomType.Basic)]
     public required RoomType Type { get; init; }
     
-    [DefaultValue("https://www.example.com/image.jpg")]
-    public required string ImageUrl { get; init; }
-    
-    public CreateRoom ToCreateRoom()
-    {
-        return new CreateRoom(Number, Capacity, Floor, WithSpecialNeeds, Type, ImageUrl);
-    }
+    public required IFormFile Image { get; init; }
 }

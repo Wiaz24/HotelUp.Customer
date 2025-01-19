@@ -11,7 +11,6 @@ internal static class Extensions
         services.AddScoped<IClientRepository, PostgresClientRepository>();
         services.AddScoped<IReservationRepository, PostgresReservationRepository>();
         services.AddScoped<IRoomRepository, PostgresRoomRepository>();
-        services.AddScoped<IReservationOwnershipService, ReservationOwnershipService>();
         return services;
     }
 }

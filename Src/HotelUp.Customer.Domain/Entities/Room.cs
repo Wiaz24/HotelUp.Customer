@@ -27,4 +27,9 @@ public class Room : AggregateRoot<int>
     private Room()
     {
     }
+    
+    public void SetImageUri(ImageUrl imageUrl)
+    {
+        ImageUrl = imageUrl;
+    }
 }
