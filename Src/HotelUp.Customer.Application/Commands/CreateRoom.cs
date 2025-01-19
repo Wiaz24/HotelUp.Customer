@@ -1,6 +1,8 @@
 using HotelUp.Customer.Application.Commands.Abstractions;
 using HotelUp.Customer.Domain.Consts;
 
+using Microsoft.AspNetCore.Http;
+
 namespace HotelUp.Customer.Application.Commands;
 
 public record CreateRoom(
@@ -9,4 +11,4 @@ public record CreateRoom(
     int Floor,
     bool WithSpecialNeeds,
     RoomType Type,
-    string ImageUrl) : ICommand;
+    IFormFile Image) : ICommand;

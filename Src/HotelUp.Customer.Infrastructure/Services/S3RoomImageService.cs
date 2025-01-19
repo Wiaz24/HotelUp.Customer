@@ -1,8 +1,11 @@
-﻿using Amazon.S3;
+﻿using System.Net;
+
+using Amazon.S3;
 using Amazon.S3.Model;
 using HotelUp.Customer.Application.ApplicationServices;
-using HotelUp.Customer.Domain.ValueObjects;
 using HotelUp.Customer.Infrastructure.S3;
+using HotelUp.Customer.Infrastructure.Services.Exceptions;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,48 +27,34 @@ public class S3RoomImageService : IRoomImageService
         _timeProvider = timeProvider;
         _options = options.Value;
     }
-
-    public async Task<ImageUrl> UploadImageAsync(int roomId, IFormFile image)
+    
+    public static string GenerateKey(int roomId, IFormFile image)
     {
-        var objectKey = $"rooms/{roomId}/{image.FileName}";
-        var presignedUrl = await GeneratePresignedUrl(objectKey);
+        return $"rooms/{roomId}/{image.FileName}";
+    }
+
+    public async Task<string> UploadImageAsync(int roomId, IFormFile image)
+    {
+        var key = GenerateKey(roomId, image);
         var putObjectRequest = new PutObjectRequest
         {
             BucketName = _options.BucketName,
-            Key = objectKey,
-            FilePath = presignedUrl,
+            Key = key,
             ContentType = image.ContentType,
             InputStream = image.OpenReadStream(),
             Metadata =
             {
                 ["x-amz-meta-original-filename"] = image.FileName,
-                ["x-amz-meta-room-id"] = roomId.ToString(),
                 ["x-amz-meta-extension"] = Path.GetExtension(image.FileName)
             }
         };
         var response = await _s3Client.PutObjectAsync(putObjectRequest);
-        return new ImageUrl(presignedUrl);
-    }
-    
-    private async Task<string> GeneratePresignedUrl(string objectKey)
-    {
-        string urlString;
-        try
+        if (response.HttpStatusCode != HttpStatusCode.OK)
         {
-            var request = new GetPreSignedUrlRequest()
-            {
-                BucketName = _options.BucketName,
-                Key = objectKey,
-                Expires = _timeProvider.GetUtcNow().AddHours(1).DateTime
-            };
-            urlString = await _s3Client.GetPreSignedURLAsync(request);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            _logger.LogError(ex, "Error generating presigned URL");
-            throw;
+            _logger.LogError("Failed to upload an image to S3. Status code: {StatusCode}.", response.HttpStatusCode);
+            throw new RoomImageUploadFailedException();
         }
 
-        return urlString;
+        return $"https://s3.{_options.Region}.amazonaws.com/{_options.BucketName}/{key}";
     }
 }

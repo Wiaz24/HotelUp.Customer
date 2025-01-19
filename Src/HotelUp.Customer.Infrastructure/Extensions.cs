@@ -1,5 +1,4 @@
 ﻿using HotelUp.Customer.Infrastructure.EF;
-using HotelUp.Customer.Infrastructure.EF.Health;
 using HotelUp.Customer.Infrastructure.Quartz;
 using HotelUp.Customer.Infrastructure.Queries;
 using HotelUp.Customer.Infrastructure.Repositories;

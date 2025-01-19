@@ -6,5 +6,5 @@ namespace HotelUp.Customer.Application.ApplicationServices;
 
 public interface IRoomImageService
 {
-    Task<ImageUrl> UploadImageAsync(int roomId, IFormFile image);
+    Task<string> UploadImageAsync(int roomId, IFormFile image);
 }

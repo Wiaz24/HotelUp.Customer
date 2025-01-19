@@ -72,9 +72,9 @@ public class CommandsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [SwaggerOperation("Create new room")]
-    public async Task<IActionResult> CreateRoom([FromBody] CreateRoomDto dto)
+    public async Task<IActionResult> CreateRoom([FromForm] CreateRoomDto dto)
     {
-        var command = dto.ToCreateRoom();
+        var command = new CreateRoom(dto.Number, dto.Capacity, dto.Floor, dto.WithSpecialNeeds, dto.Type, dto.Image);
         await _commandDispatcher.DispatchAsync(command);
         return Created("",LoggedInUserId);
     }
