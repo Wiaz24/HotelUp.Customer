@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <PackageReference Include="AppAny.Quartz.EntityFrameworkCore.Migrations.PostgreSQL" Version="0.5.1" />
+      <PackageReference Include="AWSSDK.S3" Version="3.7.412.2" />
       <PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />
       <PackageReference Include="Quartz.Serialization.SystemTextJson" Version="3.13.1" />
     </ItemGroup>

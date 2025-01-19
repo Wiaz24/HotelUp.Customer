@@ -76,7 +76,7 @@ public class CommandsController : ControllerBase
     {
         var command = dto.ToCreateRoom();
         await _commandDispatcher.DispatchAsync(command);
-        return Created();
+        return Created("",LoggedInUserId);
     }
     
     [Obsolete]
