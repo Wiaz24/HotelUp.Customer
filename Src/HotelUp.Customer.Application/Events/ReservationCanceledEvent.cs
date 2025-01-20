@@ -1,3 +1,6 @@
 namespace HotelUp.Customer.Application.Events;
 
-public record ReservationCanceledEvent(Guid ReservationId);
+public record ReservationCanceledEvent
+{
+    public Guid ReservationId { get; init; }
+}

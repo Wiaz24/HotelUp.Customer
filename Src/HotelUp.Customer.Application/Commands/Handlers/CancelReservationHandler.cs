@@ -2,7 +2,6 @@ using HotelUp.Customer.Application.Commands.Abstractions;
 using HotelUp.Customer.Application.Commands.Exceptions;
 using HotelUp.Customer.Application.Events;
 using HotelUp.Customer.Domain.Repositories;
-
 using MassTransit;
 
 namespace HotelUp.Customer.Application.Commands.Handlers;
@@ -26,6 +25,6 @@ public class CancelReservationHandler : ICommandHandler<CancelReservation>
         }
         reservation.Cancel();
         await _reservationRepository.UpdateAsync(reservation);
-        await _bus.Publish(new ReservationCanceledEvent(reservation.Id));
+        await _bus.Publish(new ReservationCanceledEvent{ReservationId = reservation.Id});
     }
 }
