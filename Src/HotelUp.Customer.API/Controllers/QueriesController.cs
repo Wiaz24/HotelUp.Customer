@@ -4,6 +4,7 @@ using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Application.Queries;
 using HotelUp.Customer.Application.Queries.Abstractions;
 using HotelUp.Customer.Application.Queries.DTOs;
+using HotelUp.Customer.Shared.Auth;
 using HotelUp.Customer.Shared.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +36,7 @@ public class QueriesController : ControllerBase
         return Ok(result);
     }
     
-    [Authorize]
+    [Authorize(Policy = PoliciesNames.CanManageReservations)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpGet("get-users-reservations")]
@@ -47,7 +48,7 @@ public class QueriesController : ControllerBase
         return Ok(result);
     }
     
-    [Authorize]
+    [Authorize(Policy = PoliciesNames.CanManageReservations)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -20,42 +20,19 @@ This service creates the following exchanges:
 - `HotelUp.Customer:ReservationCreatedEvent` - to notify about new reservations. The message provides the following example payload structure:
     ```json
     {
-      "reservationDto":{
-        "id":"3ef70b03-2fa4-4a94-b5d8-91c0d0077147",
-        "status":"Valid",
-        "startDate":"2025-01-01T00:00:00Z",
-        "endDate":"2025-01-05T00:00:00Z",
-        "rooms":[
+       "reservationId":"00ce21d3-1b14-4d95-9a68-aa3a883e6e09",
+       "startDate":"2025-11-01T00:00:00Z",
+       "endDate":"2025-11-05T00:00:00Z",
+       "rooms":[
           {
-            "id":2,
-            "capacity":2,
-            "floor":0,
-            "withSpecialNeeds":false,
-            "type":"Basic",
-            "imageUrl":"https://www.example.com/image.jpg"
+             "id":1,
+             "capacity":2,
+             "floor":0,
+             "withSpecialNeeds":false,
+             "type":"Basic",
+             "imageUrl":"https://s3.us-east-1.amazonaws.com/hotelup.customer.storage/rooms/1/room1.jpg"
           }
-        ],
-        "bill":{
-          "accommodationPrice":"180,4 PLN",
-          "additionalCosts":[
-    
-          ],
-          "payments":[
-    
-          ]
-        },
-        "tenants":[
-          {
-            "firstName":"John",
-            "lastName":"Doe",
-            "phoneNumber":"123456789",
-            "email":"john.doe@email.com",
-            "pesel":"12345678901",
-            "documentType":"Passport",
-            "status":"Pending"
-          }
-        ]
-      }
+       ]
     }
     ```
 
@@ -69,13 +46,11 @@ This service creates the following exchanges:
 - `HotelUp.Customer:RoomCreatedEvent` - to notify about new rooms. The message provides the following example payload structure:
     ```json
     {
-      "roomDto":{
-        "id":2,
-        "capacity":2,
-        "floor":0,
-        "withSpecialNeeds":false,
-        "type":"Basic",
-        "imageUrl":"https://www.example.com/image.jpg"
-      }
+      "id":1,
+      "capacity":2,
+      "floor":0,
+      "withSpecialNeeds":false,
+      "type":"Basic",
+      "imageUrl":"https://s3.us-east-1.amazonaws.com/hotelup.customer.storage/rooms/1/room1.jpg"
     }
     ```

@@ -42,7 +42,8 @@ public class CommandsControllerTests : IntegrationTestsBase
         var httpClient = Factory.CreateClient();
         var token = MockJwtTokens.GenerateJwtToken(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, clientId.ToString())
+            new Claim(ClaimTypes.NameIdentifier, clientId.ToString()),
+            new Claim(ClaimTypes.Role, "Clients")
         });
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return httpClient;

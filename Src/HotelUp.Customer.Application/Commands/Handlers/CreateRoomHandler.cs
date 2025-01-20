@@ -36,6 +36,15 @@ public class CreateRoomHandler : ICommandHandler<CreateRoom>
         var imageUri = await _roomImageService.UploadImageAsync(command.Number, command.Image);
         room.SetImageUri(imageUri);
         await _roomRepository.AddAsync(room);
-        await _bus.Publish(new RoomCreatedEvent(new RoomDto(room)));
+        var roomCreatedEvent = new RoomCreatedEvent
+        {
+            Id = room.Id,
+            Capacity = room.Capacity,
+            Floor = room.Floor,
+            WithSpecialNeeds = room.WithSpecialNeeds,
+            Type = room.Type,
+            ImageUrl = room.ImageUrl
+        };
+        await _bus.Publish(roomCreatedEvent);
     }
 }

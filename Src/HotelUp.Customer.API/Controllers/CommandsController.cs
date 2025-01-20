@@ -4,6 +4,7 @@ using HotelUp.Customer.Application.ApplicationServices;
 using HotelUp.Customer.Application.Commands;
 using HotelUp.Customer.Application.Commands.Abstractions;
 using HotelUp.Customer.Application.Events.External;
+using HotelUp.Customer.Shared.Auth;
 using HotelUp.Customer.Shared.Exceptions;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,7 @@ public class CommandsController : ControllerBase
         _reservationOwnershipService = reservationOwnershipService;
     }
     
-    [Authorize]
+    [Authorize(Policy = PoliciesNames.CanManageReservations)]
     [HttpPost("create-reservation")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,7 +49,7 @@ public class CommandsController : ControllerBase
         return Created($"api/customer/queries/get-users-reservation/{id}", id);
     }
     
-    [Authorize]
+    [Authorize(Policy = PoliciesNames.CanManageReservations)]
     [HttpPost("cancel-reservation/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,7 +67,7 @@ public class CommandsController : ControllerBase
         return NoContent();
     }
     
-    [Authorize]
+    [Authorize(Policy = PoliciesNames.IsAdmin)]
     [HttpPost("create-room")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
