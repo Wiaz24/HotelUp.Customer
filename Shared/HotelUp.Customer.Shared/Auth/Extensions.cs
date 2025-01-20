@@ -35,10 +35,19 @@ internal static class Extensions
                     ValidateIssuer = oidcOptions.ValidateIssuer,
                     ValidateAudience = oidcOptions.ValidateAudience,
                     ValidateLifetime = oidcOptions.ValidateLifetime,
-                    ValidateIssuerSigningKey = oidcOptions.ValidateIssuerSigningKey
+                    ValidateIssuerSigningKey = oidcOptions.ValidateIssuerSigningKey,
+                    RoleClaimType = oidcOptions.RoleClaimType
                 };
             });
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(PoliciesNames.IsAdmin, policy => 
+                policy.RequireRole("Admins"));
+            options.AddPolicy(PoliciesNames.IsReceptionist, policy =>
+                policy.RequireRole("Receptionists"));
+            options.AddPolicy(PoliciesNames.CanManageReservations, policy =>
+                policy.RequireRole("Clients", "Admins", "Receptionists"));
+        });
         return services;
     }
     internal static IApplicationBuilder UseAuth(this IApplicationBuilder app)
