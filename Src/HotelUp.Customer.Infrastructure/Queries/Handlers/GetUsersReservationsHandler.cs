@@ -20,6 +20,7 @@ public class GetUsersReservationsHandler : IQueryHandler<GetUsersReservations, I
     {
         return await _context.Reservations
             .Where(r => r.Client.Id == query.Id)
+            .Include(r => r.Rooms)
             .Select(r => new ReservationDto(r))
             .ToListAsync();
     }
