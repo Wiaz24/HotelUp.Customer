@@ -3,6 +3,7 @@ using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Application.ApplicationServices;
 using HotelUp.Customer.Application.Commands;
 using HotelUp.Customer.Application.Commands.Abstractions;
+using HotelUp.Customer.Application.Events;
 using HotelUp.Customer.Application.Events.External;
 using HotelUp.Customer.Shared.Auth;
 using HotelUp.Customer.Shared.Exceptions;
@@ -92,7 +93,7 @@ public class CommandsController : ControllerBase
         var email = User.FindFirstValue(ClaimTypes.Email);
         if (email is null)
         {
-            return Unauthorized();
+            return Unauthorized("No email found in access token.");
         }
         await _bus.Publish(new UserCreatedEvent(id, email));
         return Created("", id);

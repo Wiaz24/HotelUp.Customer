@@ -1,6 +1,7 @@
 ﻿using HotelUp.Customer.Application.ApplicationServices;
 using HotelUp.Customer.Application.Commands.Abstractions;
 using HotelUp.Customer.Application.Commands.Exceptions;
+using HotelUp.Customer.Application.Events;
 using HotelUp.Customer.Application.Events.External;
 
 using MassTransit;

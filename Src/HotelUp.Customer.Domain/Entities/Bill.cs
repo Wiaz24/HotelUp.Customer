@@ -19,8 +19,9 @@ public class Bill : Entity<Guid>
         Id = Guid.NewGuid();
     }
     
-    public void AddAdditionalCost(AdditionalCost additionalCost)
+    public void AddAdditionalCost(Money amount)
     {
+        var additionalCost = new AdditionalCost(amount);
         _additionalCosts.Add(additionalCost);
     }
     
