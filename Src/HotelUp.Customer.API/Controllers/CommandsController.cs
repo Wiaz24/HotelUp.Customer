@@ -89,7 +89,23 @@ public class CommandsController : ControllerBase
     public async Task<IActionResult> TestUserCreatedEvent()
     {
         var id = LoggedInUserId;
-        await _bus.Publish(new UserCreatedEvent(id));
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        if (email is null)
+        {
+            return Unauthorized();
+        }
+        await _bus.Publish(new UserCreatedEvent(id, email));
         return Created("", id);
+    }
+    
+    [HttpPost("publish-user-created-event")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerOperation("Publish user created event. Only for AWS Lambda. Requires API key.")]
+    public async Task<IActionResult> PublishUserCreatedEvent([FromBody] UserCreatedDto dto)
+    {
+        var command = new PublishUserCreated(dto.ApiKey, dto.UserId, dto.UserEmail);
+        await _commandDispatcher.DispatchAsync(command);
+        return Ok();
     }
 }

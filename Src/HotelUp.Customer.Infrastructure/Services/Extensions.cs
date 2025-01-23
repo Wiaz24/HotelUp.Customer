@@ -12,6 +12,7 @@ public static class Extensions
         services.AddScoped<ITenantCleanerService, QuartzTenantCleanerService>();
         services.AddScoped<IReservationOwnershipService, ReservationOwnershipService>();
         services.AddScoped<IRoomImageService, S3RoomImageService>();
+        services.AddScoped<ILambdaApiKeyValidatorService, LambdaApiKeyValidatorService>();
         return services;
     }
 }

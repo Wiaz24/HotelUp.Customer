@@ -64,7 +64,7 @@ internal static class Extensions
             
             c.OAuthClientId(oidcOptions.ClientId);
             c.OAuthClientSecret(oidcOptions.ClientSecret);
-            // c.OAuthUsePkce();
+            c.OAuthUsePkce();
         });
         return app;
     }
