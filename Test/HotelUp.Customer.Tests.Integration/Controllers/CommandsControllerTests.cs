@@ -49,17 +49,7 @@ public class CommandsControllerTests : IntegrationTestsBase
         return httpClient;
     }
 
-    private async Task<Client> CreateSampleClient()
-    {
-        var clientId = Guid.NewGuid();
-        var client = await ClientGenerator.GenerateSampleClient(clientId);
-        
-        using var scope = _serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-        dbContext.Clients.Add(client);
-        await dbContext.SaveChangesAsync();
-        return client;
-    }
+    
     
     private async Task<List<Room>> CreateSampleRooms(int count, int tenantsCount)
     {

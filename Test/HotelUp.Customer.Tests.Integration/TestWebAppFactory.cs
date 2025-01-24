@@ -50,6 +50,7 @@ public class TestWebAppFactory : WebApplicationFactory<IApiMarker>, IAsyncLifeti
         var tasks = _containers
             .Select(c => c.StartAsync());
         await Task.WhenAll(tasks);
+        await Task.Delay(3000);
     }
 
     public new Task DisposeAsync()

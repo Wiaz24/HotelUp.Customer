@@ -13,6 +13,8 @@ internal static class TestDatabaseFactory
     private static int GetPort => DefaultPort + Interlocked.Increment(ref _numInstances);
     internal static PostgreSqlContainer Create()
     {
+        var initSqlPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "init.sql");
+        var postgresqlConfPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "postgresql.conf");
         var port = GetPort;
         return new PostgreSqlBuilder()
             .WithImage("postgres:latest")
@@ -20,7 +22,9 @@ internal static class TestDatabaseFactory
             .WithPortBinding(port, DefaultPort)
             .WithUsername("Postgres")
             .WithPassword("Postgres")
-            .WithCommand("-c", "track_commit_timestamp=true")
+            .WithCommand("-c", "config_file=/etc/postgresql.conf")
+            .WithBindMount(initSqlPath, "/docker-entrypoint-initdb.d/init.sql")
+            .WithBindMount(postgresqlConfPath, "/etc/postgresql.conf")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(DefaultPort))
             .Build();
     }
