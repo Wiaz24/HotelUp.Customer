@@ -1,5 +1,5 @@
 using HotelUp.Customer.Application.ApplicationServices;
-using HotelUp.Customer.Infrastructure.EF.Contexts;
+using HotelUp.Customer.Infrastructure.EFCore.Contexts;
 
 using Microsoft.EntityFrameworkCore;
 

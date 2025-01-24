@@ -1,8 +1,9 @@
-﻿using HotelUp.Customer.Infrastructure.EF.Contexts;
+﻿using HotelUp.Customer.Infrastructure.EFCore.Contexts;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace HotelUp.Customer.Infrastructure.EF.Health;
+namespace HotelUp.Customer.Infrastructure.EFCore.Health;
 
 public class DatabaseHealthCheck : IHealthCheck
 {

@@ -1,9 +1,10 @@
 using HotelUp.Customer.Domain.Entities;
-using HotelUp.Customer.Infrastructure.EF.CustomExtensions;
+using HotelUp.Customer.Infrastructure.EFCore.CustomExtensions;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace HotelUp.Customer.Infrastructure.EF.Config;
+namespace HotelUp.Customer.Infrastructure.EFCore.Config;
 
 internal sealed class EntitiesConfiguration
     : IEntityTypeConfiguration<Reservation>, 

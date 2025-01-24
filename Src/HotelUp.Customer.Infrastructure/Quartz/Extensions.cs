@@ -1,4 +1,4 @@
-﻿using HotelUp.Customer.Infrastructure.EF.Postgres;
+﻿using HotelUp.Customer.Infrastructure.EFCore.Postgres;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

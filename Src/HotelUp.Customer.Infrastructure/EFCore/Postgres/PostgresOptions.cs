@@ -1,4 +1,4 @@
-namespace HotelUp.Customer.Infrastructure.EF.Postgres;
+namespace HotelUp.Customer.Infrastructure.EFCore.Postgres;
 
 public sealed class PostgresOptions
 {

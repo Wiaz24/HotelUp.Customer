@@ -1,13 +1,14 @@
-using HotelUp.Customer.Infrastructure.EF.Contexts;
-using HotelUp.Customer.Infrastructure.EF.Health;
-using HotelUp.Customer.Infrastructure.EF.Postgres;
+using HotelUp.Customer.Infrastructure.EFCore.Contexts;
+using HotelUp.Customer.Infrastructure.EFCore.Health;
+using HotelUp.Customer.Infrastructure.EFCore.Postgres;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 using Npgsql;
 
-namespace HotelUp.Customer.Infrastructure.EF;
+namespace HotelUp.Customer.Infrastructure.EFCore;
 
 internal static class Extensions
 {

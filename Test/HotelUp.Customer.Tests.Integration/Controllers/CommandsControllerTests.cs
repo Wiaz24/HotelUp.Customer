@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Domain.Entities;
-using HotelUp.Customer.Infrastructure.EF.Contexts;
+using HotelUp.Customer.Infrastructure.EFCore.Contexts;
 using HotelUp.Customer.Tests.Integration.Utils;
 using HotelUp.Customer.Tests.Shared.Utils;
 

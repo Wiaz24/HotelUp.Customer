@@ -1,6 +1,7 @@
 using HotelUp.Customer.Domain.Entities;
 using HotelUp.Customer.Domain.Repositories;
-using HotelUp.Customer.Infrastructure.EF.Contexts;
+using HotelUp.Customer.Infrastructure.EFCore.Contexts;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelUp.Customer.Infrastructure.Repositories;

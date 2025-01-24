@@ -99,4 +99,32 @@ public class SequenceIntegrationTests : IntegrationTestsBase
         response4.StatusCode.ShouldBe(HttpStatusCode.OK);
         
     }
+    
+    [Fact]
+    public async Task GetUserReservations_WithDeltaInstalled_ShouldProvideAndUseETags()
+    {
+        // Arrange1
+        var client = await CreateSampleClient();
+        var adminClaim = new Claim(ClaimTypes.Role, "Admins");
+        var httpClient = CreateHttpClientWithClaims(client.Id, [adminClaim]);
+        var requestPath = $"{Prefix}/queries/get-users-reservations";
+        
+        // Act1
+        var response = await httpClient.GetAsync(requestPath);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var eTag = response.Headers.ETag;
+        
+        // Assert1
+        eTag.ShouldNotBeNull();
+        
+        // Arrange2
+        var request = new HttpRequestMessage(HttpMethod.Get, requestPath);
+        request.Headers.IfNoneMatch.Add(eTag);
+        
+        // Act2
+        var response2 = await httpClient.SendAsync(request);
+        
+        // Assert2
+        response2.StatusCode.ShouldBe(HttpStatusCode.NotModified);
+    }
 }

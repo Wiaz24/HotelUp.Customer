@@ -1,12 +1,11 @@
-using HotelUp.Customer.Domain.Consts;
 using HotelUp.Customer.Domain.Entities;
-using HotelUp.Customer.Infrastructure.EF.Config;
-using HotelUp.Customer.Infrastructure.EF.Postgres;
+using HotelUp.Customer.Infrastructure.EFCore.Config;
+using HotelUp.Customer.Infrastructure.EFCore.Postgres;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace HotelUp.Customer.Infrastructure.EF.Contexts;
+namespace HotelUp.Customer.Infrastructure.EFCore.Contexts;
 
 public sealed class WriteDbContext : DbContext
 {

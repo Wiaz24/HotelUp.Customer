@@ -1,10 +1,10 @@
 ﻿using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
+
 using HotelUp.Customer.Domain.ValueObjects.Abstractions;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace HotelUp.Customer.Infrastructure.EF.CustomExtensions;
+namespace HotelUp.Customer.Infrastructure.EFCore.CustomExtensions;
 
 internal static class Extensions
 {
