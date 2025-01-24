@@ -15,42 +15,78 @@ Health status of the service should be available at:
 ```
 and should return 200 OK if the service is running, otherwise 503 Service Unavailable.
 
-## AMQP exchanges
+## Message broker
+This service uses `MassTransit` library to communicate with the message broker. For the purpose of integration with 
+another MassTransit service, all published events are declared in the `HotelUp.Customer.Application.Events` namespace.
+
+### AMQP Exchanges
 This service creates the following exchanges:
-- `HotelUp.Customer:ReservationCreatedEvent` - to notify about new reservations. The message provides the following example payload structure:
+- `HotelUp.Customer:ReservationCreatedEvent` - to notify about new reservations. Published messages have
+    payload structure that contains the following section:
     ```json
     {
-       "reservationId":"00ce21d3-1b14-4d95-9a68-aa3a883e6e09",
-       "startDate":"2025-11-01T00:00:00Z",
-       "endDate":"2025-11-05T00:00:00Z",
-       "rooms":[
-          {
-             "id":1,
-             "capacity":2,
-             "floor":0,
-             "withSpecialNeeds":false,
-             "type":"Basic",
-             "imageUrl":"https://s3.us-east-1.amazonaws.com/hotelup.customer.storage/rooms/1/room1.jpg"
-          }
-       ]
+        "message": {
+            "reservationId":"00ce21d3-1b14-4d95-9a68-aa3a883e6e09",
+            "startDate":"2025-11-01T00:00:00Z",
+            "endDate":"2025-11-05T00:00:00Z",
+            "rooms":[
+                {
+                    "id":1,
+                    "capacity":2,
+                    "floor":0,
+                    "withSpecialNeeds":false,
+                    "type":"Basic",
+                    "imageUrl":"https://s3.us-east-1.amazonaws.com/hotelup.customer.storage/rooms/1/room1.jpg"
+                }
+            ]
+        }
     }
     ```
 
-- `HotelUp.Customer:ReservationCanceledEvent` - to notify about canceled reservations. The message provides the following example payload structure:
+- `HotelUp.Customer:ReservationCanceledEvent` - to notify about canceled reservations. Published messages have
+  payload structure that contains the following section:
     ```json
     {
-      "reservationId":"3ef70b03-2fa4-4a94-b5d8-91c0d0077147"
+        "message": {
+            "reservationId":"3ef70b03-2fa4-4a94-b5d8-91c0d0077147"
+        }
     }
     ```
   
-- `HotelUp.Customer:RoomCreatedEvent` - to notify about new rooms. The message provides the following example payload structure:
+- `HotelUp.Customer:RoomCreatedEvent` - to notify about new rooms. Published messages have
+  payload structure that contains the following section:
     ```json
     {
-      "id":1,
-      "capacity":2,
-      "floor":0,
-      "withSpecialNeeds":false,
-      "type":"Basic",
-      "imageUrl":"https://s3.us-east-1.amazonaws.com/hotelup.customer.storage/rooms/1/room1.jpg"
+        "message": {
+            "id":1,
+            "capacity":2,
+            "floor":0,
+            "withSpecialNeeds":false,
+            "type":"Basic",
+            "imageUrl":"https://s3.us-east-1.amazonaws.com/hotelup.customer.storage/rooms/1/room1.jpg"
+        }
+    }
+    ```
+
+- `HotelUp.Customer:UserCreatedEvent` - to notify about new users registered with cognito. Published messages have
+  payload structure that contains the following section:
+    ```json
+    {
+        "message": {
+            "userId":"3ef70b03-2fa4-4a94-b5d8-91c0d0077147",
+            "email":"example@email.com"
+        }
+    }
+    ``` 
+### AMQP Queues
+This service creates queues that consume messages from the following exchanges:
+- `HotelUp.Cleaning:OnDemandCleaningTaskCreatedEvent` - to consume messages about cleaning tasks that generate 
+additional cost. Consumed messages have payload structure that contains the following section:
+    ```json
+    {
+        "message": {
+            "taskId": "3ef70b03-2fa4-4a94-b5d8-91c0d0077147",
+            "reservationId":"00ce21d3-1b14-4d95-9a68-aa3a883e6e09"
+        }
     }
     ```

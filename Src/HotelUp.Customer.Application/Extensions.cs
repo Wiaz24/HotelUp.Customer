@@ -1,4 +1,5 @@
-﻿using HotelUp.Customer.Application.Commands;
+﻿using HotelUp.Customer.Application.ApplicationServices;
+using HotelUp.Customer.Application.Commands;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,10 @@ public static class Extensions
         services.AddCommandHandlers(); // Auto-registered command handlers
         services.AddApplicationServices(configuration);
         // here could be scanning for policies
+        services.AddOptions<LambdaOptions>()
+            .BindConfiguration("AWS:Lambda")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         return services;
     }
 

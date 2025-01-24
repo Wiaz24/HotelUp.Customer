@@ -18,7 +18,7 @@ public class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
 
     public async Task Consume(ConsumeContext<UserCreatedEvent> context)
     {
-        var id = context.Message.Id;
+        var id = context.Message.UserId;
         var client = await _clientFactory.Create(id);
         await _clientRepository.AddAsync(client);
     }
