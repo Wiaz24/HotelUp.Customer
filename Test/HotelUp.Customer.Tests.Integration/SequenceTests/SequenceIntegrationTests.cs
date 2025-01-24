@@ -92,11 +92,11 @@ public class SequenceIntegrationTests : IntegrationTestsBase
         _output.WriteLine($"Response3: {await response3.Content.ReadAsStringAsync()}");
         response3.StatusCode.ShouldBe(HttpStatusCode.Created);
         
-        // // Get free rooms
-        // var response4 = await httpClient.GetAsync(
-        //     $"{Prefix}/queries/get-free-rooms?StartDate={startDate.ToString("O")}&EndDate={endDate.ToString("O")}");
-        // _output.WriteLine($"Response4: {await response4.Content.ReadAsStringAsync()}");
-        // response4.StatusCode.ShouldBe(HttpStatusCode.OK);
+        // Get free rooms
+        var response4 = await httpClient.GetAsync(
+            $"{Prefix}/queries/get-free-rooms?StartDate={startDate.ToString("O")}&EndDate={endDate.ToString("O")}");
+        _output.WriteLine($"Response4: {await response4.Content.ReadAsStringAsync()}");
+        response4.StatusCode.ShouldBe(HttpStatusCode.OK);
         
     }
 }
