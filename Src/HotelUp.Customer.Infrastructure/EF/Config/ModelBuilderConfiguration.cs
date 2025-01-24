@@ -15,10 +15,10 @@ internal static class ModelBuilderConfiguration
     {
         var schemaName = options.SchemaName;
         modelBuilder.HasDefaultSchema(schemaName);
-        modelBuilder.HasPostgresEnum<DocumentType>();
-        modelBuilder.HasPostgresEnum<PresenceStatus>();
-        modelBuilder.HasPostgresEnum<ReservationStatus>();
-        modelBuilder.HasPostgresEnum<RoomType>();
+        // modelBuilder.HasPostgresEnum<DocumentType>();
+        // modelBuilder.HasPostgresEnum<PresenceStatus>();
+        // modelBuilder.HasPostgresEnum<ReservationStatus>();
+        // modelBuilder.HasPostgresEnum<RoomType>();
         modelBuilder.AddQuartz(builder => builder.UsePostgreSql(schema: schemaName));
         
         var configuration = new EntitiesConfiguration();

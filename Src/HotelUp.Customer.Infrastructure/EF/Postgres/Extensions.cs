@@ -27,10 +27,10 @@ public static class Extensions
         var connectionString = options.Value.ConnectionString;
         
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-        dataSourceBuilder.MapEnum<DocumentType>($"{schemaName}.document_type");
-        dataSourceBuilder.MapEnum<PresenceStatus>($"{schemaName}.presence_status");
-        dataSourceBuilder.MapEnum<ReservationStatus>($"{schemaName}.reservation_status");
-        dataSourceBuilder.MapEnum<RoomType>($"{schemaName}.room_type");
+        // dataSourceBuilder.MapEnum<DocumentType>($"{schemaName}.document_type");
+        // dataSourceBuilder.MapEnum<PresenceStatus>($"{schemaName}.presence_status");
+        // dataSourceBuilder.MapEnum<ReservationStatus>($"{schemaName}.reservation_status");
+        // dataSourceBuilder.MapEnum<RoomType>($"{schemaName}.room_type");
         var dataSource = dataSourceBuilder.Build();
         services.AddDbContext<T>(x => x.UseNpgsql(dataSource, builder =>
         {

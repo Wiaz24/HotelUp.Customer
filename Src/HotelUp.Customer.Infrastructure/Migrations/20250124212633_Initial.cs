@@ -1,5 +1,4 @@
 ﻿using System;
-using HotelUp.Customer.Domain.Consts;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -15,12 +14,6 @@ namespace HotelUp.Customer.Infrastructure.Migrations
         {
             migrationBuilder.EnsureSchema(
                 name: "customer");
-
-            migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:Enum:document_type", "passport,id_card")
-                .Annotation("Npgsql:Enum:presence_status", "pending,checked_in,checked_out")
-                .Annotation("Npgsql:Enum:reservation_status", "valid,canceled")
-                .Annotation("Npgsql:Enum:room_type", "economy,basic,premium");
 
             migrationBuilder.CreateTable(
                 name: "Clients",
@@ -144,7 +137,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                     Capacity = table.Column<int>(type: "integer", nullable: false),
                     Floor = table.Column<int>(type: "integer", nullable: false),
                     WithSpecialNeeds = table.Column<bool>(type: "boolean", nullable: false),
-                    Type = table.Column<RoomType>(type: "customer.room_type", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
                     ImageUrl = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
@@ -160,7 +153,7 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<ReservationStatus>(type: "customer.reservation_status", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     Period_From = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Period_To = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -273,8 +266,8 @@ namespace HotelUp.Customer.Infrastructure.Migrations
                     PhoneNumber = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
                     Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     Pesel = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: true),
-                    DocumentType = table.Column<DocumentType>(type: "customer.document_type", nullable: true),
-                    Status = table.Column<PresenceStatus>(type: "customer.presence_status", nullable: false)
+                    DocumentType = table.Column<int>(type: "integer", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
