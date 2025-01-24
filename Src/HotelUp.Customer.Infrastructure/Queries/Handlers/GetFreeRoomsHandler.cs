@@ -13,22 +13,13 @@ namespace HotelUp.Customer.Infrastructure.Queries.Handlers;
 public class GetFreeRoomsHandler : IQueryHandler<GetFreeRooms, IEnumerable<RoomDto>>
 {
     private readonly ReadDbContext _context;
-    private readonly IMemoryCache _cache;
-    public GetFreeRoomsHandler(ReadDbContext context, IMemoryCache cache)
+    public GetFreeRoomsHandler(ReadDbContext context)
     {
         _context = context;
-        _cache = cache;
     }
     
     public async Task<IEnumerable<RoomDto>> HandleAsync(GetFreeRooms query)
     {
-        var cacheKey = JsonSerializer.Serialize(query);
-        var cachedResult = _cache.Get<IEnumerable<RoomDto>>(cacheKey);
-
-        if (cachedResult is not null)
-        {
-            return cachedResult;
-        }
         var startDate = DateTime.SpecifyKind(query.StartDate, DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(query.EndDate, DateTimeKind.Utc);
         var roomsQuery = _context.Rooms
@@ -46,7 +37,6 @@ public class GetFreeRoomsHandler : IQueryHandler<GetFreeRooms, IEnumerable<RoomD
             roomsQuery = roomsQuery.Where(r => r.Capacity == query.RoomCapacity);
         }
         var result = (await roomsQuery.ToListAsync()).Select(x => new RoomDto(x)).ToList();
-        _cache.Set(cacheKey, result, TimeSpan.FromMinutes(5));
         return result;
     }
 }
