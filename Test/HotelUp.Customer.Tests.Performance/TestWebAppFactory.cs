@@ -1,14 +1,11 @@
 ﻿using DotNet.Testcontainers.Containers;
-
-using HotelUp.Customer.Tests.Performance.TestContainers;
 using HotelUp.Customer.Tests.Performance.Utils;
-
+using HotelUp.Customer.Tests.Shared.TestContainers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 
