@@ -36,7 +36,8 @@ public class GetFreeRoomsHandler : IQueryHandler<GetFreeRooms, IEnumerable<RoomD
         {
             roomsQuery = roomsQuery.Where(r => r.Capacity == query.RoomCapacity);
         }
-        var result = (await roomsQuery.ToListAsync()).Select(x => new RoomDto(x)).ToList();
-        return result;
+        var rooms = await roomsQuery.ToListAsync();
+        var roomDtos = rooms.Select(x => new RoomDto(x));
+        return roomDtos;
     }
 }

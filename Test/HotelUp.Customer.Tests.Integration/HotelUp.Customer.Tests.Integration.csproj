@@ -29,4 +29,10 @@
         <ProjectReference Include="..\HotelUp.Customer.Tests.Shared\HotelUp.Customer.Tests.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="Resources/room1.jpg" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="Resources/postgresql.conf" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="Resources/init.sql" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>
