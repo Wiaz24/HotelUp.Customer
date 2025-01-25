@@ -22,22 +22,24 @@ public class CommandsController : ControllerBase
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IBus _bus;
     private readonly IReservationOwnershipService _reservationOwnershipService; 
+    private readonly IAuthorizationService _authorizationService;
     private Guid LoggedInUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) 
         is { } id ? new Guid(id) : throw new TokenException("No user id found in access token.");
     public CommandsController(ICommandDispatcher commandDispatcher, IBus bus, 
-        IReservationOwnershipService reservationOwnershipService)
+        IReservationOwnershipService reservationOwnershipService, IAuthorizationService authorizationService)
     {
         _commandDispatcher = commandDispatcher;
         _bus = bus;
         _reservationOwnershipService = reservationOwnershipService;
+        _authorizationService = authorizationService;
     }
     
-    [Authorize(Policy = PoliciesNames.CanManageReservations)]
+    [Authorize]
     [HttpPost("create-reservation")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [SwaggerOperation("Create new reservation")]
+    [SwaggerOperation("Create new reservation for logged in user")]
     public async  Task<IActionResult> CreateReservation([FromBody] CreateReservationDto dto)
     {
         var command = new CreateReservation(
@@ -51,6 +53,24 @@ public class CommandsController : ControllerBase
     }
     
     [Authorize(Policy = PoliciesNames.CanManageReservations)]
+    [HttpPost("create-reservation/{userId:guid}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [SwaggerOperation("Create new reservation for provided user. Requires to be in role: Admins/Receptionists")]
+    public async  Task<IActionResult> CreateReservation([FromBody] CreateReservationDto dto, Guid userId)
+    {
+        var command = new CreateReservation(
+            userId, 
+            dto.RoomNumbers, 
+            dto.TenantsData.Select(td => td.ToTenantData()), 
+            dto.StartDate, 
+            dto.EndDate);
+        var id = await _commandDispatcher.DispatchAsync(command);
+        return Created($"api/customer/queries/get-users-reservation/{id}", id);
+    }
+    
+    [Authorize]
     [HttpPost("cancel-reservation/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -59,6 +79,12 @@ public class CommandsController : ControllerBase
     [SwaggerOperation("Cancel reservation by id")]
     public async Task<IActionResult> CancelReservation([FromRoute] Guid id)
     {
+        var authorizationResult = await _authorizationService
+            .AuthorizeAsync(User, PoliciesNames.CanManageReservations);
+        if (!authorizationResult.Succeeded)
+        {
+            return Unauthorized();
+        }
         if (!await _reservationOwnershipService.IsReservationOwner(id, LoggedInUserId))
         {
             return Unauthorized();

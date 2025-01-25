@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+
+using Delta;
+
 using HotelUp.Customer.API.Cors;
 using HotelUp.Customer.API.Swagger;
 using HotelUp.Customer.Application;
@@ -21,6 +24,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 app.UseShared();
+app.UseDelta();
 app.UseCustomSwagger();
 app.UseCorsForFrontend();
 app.MapControllers();

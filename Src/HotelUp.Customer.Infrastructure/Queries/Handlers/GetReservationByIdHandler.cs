@@ -1,7 +1,8 @@
 using HotelUp.Customer.Application.Queries;
 using HotelUp.Customer.Application.Queries.Abstractions;
 using HotelUp.Customer.Application.Queries.DTOs;
-using HotelUp.Customer.Infrastructure.EF.Contexts;
+using HotelUp.Customer.Infrastructure.EFCore.Contexts;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelUp.Customer.Infrastructure.Queries.Handlers;

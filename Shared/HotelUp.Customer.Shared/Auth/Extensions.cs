@@ -46,7 +46,7 @@ internal static class Extensions
             options.AddPolicy(PoliciesNames.IsReceptionist, policy =>
                 policy.RequireRole("Receptionists"));
             options.AddPolicy(PoliciesNames.CanManageReservations, policy =>
-                policy.RequireRole("Clients", "Admins", "Receptionists"));
+                policy.RequireRole("Admins", "Receptionists"));
         });
         return services;
     }

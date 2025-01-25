@@ -1,6 +1,9 @@
 ﻿using System.Text.Json;
 using HotelUp.Customer.API.DTOs;
 using HotelUp.Customer.Domain.Consts;
+
+using Microsoft.AspNetCore.Http;
+
 using NBomber.Contracts.Stats;
 using NBomber.CSharp;
 using NBomber.Http.CSharp;
@@ -23,7 +26,7 @@ public class QueriesControllerTests : PerformanceTestsBase
 
     [Theory]
     [InlineData(500)]
-    public void GetFreeRooms_ShouldHandleAtLeastXRequestsPerSecond(int expectedRPS)
+    public async Task GetFreeRooms_ShouldHandleAtLeastXRequestsPerSecond(int expectedRPS)
     {
         const string url = "api/customer/queries/get-free-rooms";
         const int durationSeconds = 5;
@@ -38,21 +41,25 @@ public class QueriesControllerTests : PerformanceTestsBase
         var payload = new StringContent(JsonSerializer.Serialize(dto));
 
         var client = Factory.CreateClient();
+        var initialResponse = await client.GetAsync(url);
+        var etag = initialResponse.Headers.ETag?.Tag;
 
         var scenario = Scenario.Create("getFreeRoomsScenario", async context =>
             {
                 var request =
                     Http.CreateRequest("GET", url)
                         .WithHeader("Accept", "application/json")
+                        .WithHeader("If-None-Match", etag)
                         .WithBody(payload);
+                
                 var response = await Http.Send(client, request);
-                return response;
+                if (response.StatusCode is "NotModified" or "OK")
+                {
+                    return Response.Ok();
+                }
+                return Response.Fail();
             })
             .WithWarmUpDuration(TimeSpan.FromSeconds(5))
-            // .WithLoadSimulations(
-            //     Simulation.Inject(expectedRPS,
-            //         TimeSpan.FromSeconds(1),
-            //         TimeSpan.FromSeconds(durationSeconds)));
             .WithLoadSimulations(Simulation.KeepConstant(100, TimeSpan.FromSeconds(durationSeconds)));
         
         
