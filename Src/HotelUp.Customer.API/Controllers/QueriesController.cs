@@ -36,19 +36,33 @@ public class QueriesController : ControllerBase
         return Ok(result);
     }
     
-    [Authorize(Policy = PoliciesNames.CanManageReservations)]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpGet("get-users-reservations")]
-    [SwaggerOperation("Returns all reservations of the logged in user")]
+    [SwaggerOperation("Returns all reservations of logged in user.")]
     public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservations()
     {
+        var query = new GetUsersReservations(LoggedInUserId);
         var result = await _queryDispatcher
-            .DispatchAsync(new GetUsersReservations(LoggedInUserId));
+            .DispatchAsync(query);
+        return Ok(result);
+    }
+
+    [Authorize(Policy = PoliciesNames.CanManageReservations)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [HttpGet("get-users-reservations/{userId:guid}")]
+    [SwaggerOperation("Returns all reservations of provided user. Requires to be in role: Admins/Receptionists")]
+    public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservations(Guid userId)
+    {
+        var query = new GetUsersReservations(userId);
+        var result = await _queryDispatcher
+            .DispatchAsync(query);
         return Ok(result);
     }
     
-    [Authorize(Policy = PoliciesNames.CanManageReservations)]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
