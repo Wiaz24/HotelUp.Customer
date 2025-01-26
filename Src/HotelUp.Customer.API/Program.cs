@@ -24,13 +24,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 app.UseShared();
-app.UseDelta();
-app.UseCustomSwagger();
-app.UseCorsForFrontend();
-app.MapControllers();
 app.MapGet("/", () => Results.Redirect("/api/customer/swagger/index.html"))
     .Produces(200)
     .ExcludeFromDescription();
+app.UseCustomSwagger();
+app.UseDelta();
+app.UseCorsForFrontend();
+app.MapControllers();
 app.Run();
 
 public interface IApiMarker
