@@ -71,25 +71,22 @@ public class CommandsController : ControllerBase
     }
     
     [Authorize]
-    [HttpPost("cancel-reservation/{id}")]
+    [HttpPost("cancel-reservation/{reservationId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation("Cancel reservation by id")]
-    public async Task<IActionResult> CancelReservation([FromRoute] Guid id)
+    public async Task<IActionResult> CancelReservation([FromRoute] Guid reservationId)
     {
         var authorizationResult = await _authorizationService
             .AuthorizeAsync(User, PoliciesNames.CanManageReservations);
-        if (!authorizationResult.Succeeded)
+        var isOwner = await _reservationOwnershipService.IsReservationOwner(reservationId, LoggedInUserId);
+        if (!authorizationResult.Succeeded && !isOwner)
         {
             return Unauthorized();
         }
-        if (!await _reservationOwnershipService.IsReservationOwner(id, LoggedInUserId))
-        {
-            return Unauthorized();
-        }
-        var command = new CancelReservation(id);
+        var command = new CancelReservation(reservationId);
         await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
