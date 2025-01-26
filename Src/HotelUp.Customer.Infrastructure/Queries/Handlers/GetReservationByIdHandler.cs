@@ -20,7 +20,7 @@ public class GetReservationByIdHandler : IQueryHandler<GetReservationById, Reser
     {
         var reservation = await _context.Reservations
             .Include(r => r.Rooms)
-            .SingleOrDefaultAsync(r => r.Client.Id == query.ClientId && r.Id == query.Id);
+            .SingleOrDefaultAsync(r => r.Id == query.Id);
         return reservation is null ? null : new ReservationDto(reservation);
     }
 }

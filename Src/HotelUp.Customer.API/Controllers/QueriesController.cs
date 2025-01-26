@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Security.Claims;
 using HotelUp.Customer.API.DTOs;
+using HotelUp.Customer.Application.ApplicationServices;
 using HotelUp.Customer.Application.Queries;
 using HotelUp.Customer.Application.Queries.Abstractions;
 using HotelUp.Customer.Application.Queries.DTOs;
@@ -19,11 +20,16 @@ namespace HotelUp.Customer.API.Controllers;
 public class QueriesController : ControllerBase
 {
     private readonly IQueryDispatcher _queryDispatcher;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IReservationOwnershipService _reservationOwnershipService; 
     private Guid LoggedInUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) 
         is { } id ? new Guid(id) : throw new TokenException("No user id found in access token.");
-    public QueriesController(IQueryDispatcher queryDispatcher)
+    public QueriesController(IQueryDispatcher queryDispatcher, IAuthorizationService authorizationService, 
+        IReservationOwnershipService reservationOwnershipService)
     {
         _queryDispatcher = queryDispatcher;
+        _authorizationService = authorizationService;
+        _reservationOwnershipService = reservationOwnershipService;
     }
     
     [HttpGet("get-free-rooms")]
@@ -49,13 +55,20 @@ public class QueriesController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Policy = PoliciesNames.CanManageReservations)]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpGet("get-users-reservations/{userId:guid}")]
-    [SwaggerOperation("Returns all reservations of provided user. Requires to be in role: Admins/Receptionists")]
+    [SwaggerOperation(@"Returns all reservations of provided user. Requires to be in role: 
+        Admins/Receptionists or be the owner of the reservation.")]
     public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservations(Guid userId)
     {
+        var authorizationResult = await _authorizationService
+            .AuthorizeAsync(User, PoliciesNames.CanManageReservations);
+        if (!authorizationResult.Succeeded && userId != LoggedInUserId)
+        {
+            return Unauthorized();
+        }
         var query = new GetUsersReservations(userId);
         var result = await _queryDispatcher
             .DispatchAsync(query);
@@ -70,7 +83,15 @@ public class QueriesController : ControllerBase
     [SwaggerOperation("Returns reservation by id")]
     public async Task<ActionResult<ReservationDto>> GetReservationById([FromRoute] Guid id)
     {
-        var query = new GetReservationById(LoggedInUserId, id);
+        var authorizationResult = await _authorizationService
+            .AuthorizeAsync(User, PoliciesNames.CanManageReservations);
+        var isOwner = await _reservationOwnershipService
+            .IsReservationOwner(id, LoggedInUserId);
+        if (!authorizationResult.Succeeded && !isOwner)
+        {
+            return Unauthorized();
+        }
+        var query = new GetReservationById(id);
         var result = await _queryDispatcher
             .DispatchAsync(query);
         if (result is null)
@@ -78,15 +99,5 @@ public class QueriesController : ControllerBase
             return NotFound();
         }
         return Ok(result);
-    }
-    
-    [Authorize]
-    [HttpGet("logged-in-user")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public IActionResult GetLoggedInUser()
-    {
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        return Ok($"Hello {email}!");
     }
 }
