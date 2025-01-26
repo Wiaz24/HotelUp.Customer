@@ -28,7 +28,7 @@ app.MapGet("/", () => Results.Redirect("/api/customer/swagger/index.html"))
     .Produces(200)
     .ExcludeFromDescription();
 app.UseCustomSwagger();
-app.UseDelta();
+// app.UseDelta();
 app.UseCorsForFrontend();
 app.MapControllers();
 app.Run();
