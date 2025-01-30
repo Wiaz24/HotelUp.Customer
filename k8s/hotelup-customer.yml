@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: customer-deployment
+    labels:
+        app: hotelup
+    namespace: hotelup
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: customer
+    template:
+        metadata:
+            name: customer
+            labels:
+                app: customer
+        spec:
+            containers:
+              - name: customer
+                image: wiaz/hotelup.customer:latest
+                imagePullPolicy: Always
+                env:
+                  - name: ASPNETCORE_ENVIRONMENT
+                    value: Production
+                ports:
+                  - containerPort: 8080
+                    protocol: TCP
+                volumeMounts:
+                  - name: aws-credentials
+                    mountPath: /home/app/.aws
+            restartPolicy: Always
+            volumes:
+              - name: aws-credentials
+                secret:
+                    secretName: aws-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: customer-service
+    labels:
+        app: customer
+    namespace: hotelup
+spec:
+    selector:
+        app: customer
+    ports:
+      - protocol: TCP
+        port: 5000
+        targetPort: 8080
+    type: ClusterIP
