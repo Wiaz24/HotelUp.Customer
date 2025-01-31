@@ -29,6 +29,7 @@ This service creates the following exchanges:
             "reservationId":"00ce21d3-1b14-4d95-9a68-aa3a883e6e09",
             "startDate":"2025-11-01T00:00:00Z",
             "endDate":"2025-11-05T00:00:00Z",
+            "accommodationPrice": "180.4",
             "rooms":[
                 {
                     "id":1,
