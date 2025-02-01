@@ -39,6 +39,7 @@ public class CreateReservationHandler : ICommandHandler<CreateReservation, Guid>
             ReservationId = reservation.Id,
             StartDate = reservation.Period.From,
             EndDate = reservation.Period.To,
+            AccommodationPrice = reservation.Bill!.AccomodationPrice.Amount,
             Rooms = reservation.Rooms.Select(x => new RoomDto(x)).ToList()
         };
         await _bus.Publish(reservationCreatedEvent);
